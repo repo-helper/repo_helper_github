@@ -1,0 +1,18 @@
+# Configuration for 'repo_helper' (https://github.com/domdfcoding/repo_helper)
+---
+modname: 'repo_helper_github'
+copyright_years: '2020'
+author: 'Dominic Davis-Foster'
+email: 'dominic@davis-foster.co.uk'
+username: 'domdfcoding'
+version: '0.0.0'
+license: 'MIT'
+short_desc: "Manage GitHub repositories with repo-helper."
+
+enable_conda: False
+enable_tests: False
+enable_docs: False
+
+entry_points:
+ repo_helper.command:
+  - repo_helper_github=repo_helper_github:github
