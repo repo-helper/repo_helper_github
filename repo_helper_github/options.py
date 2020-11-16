@@ -23,6 +23,9 @@
 #  OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
+# stdlib
+from typing import Callable
+
 # 3rd party
 import click
 from domdf_python_tools.stringlist import DelimitedList
@@ -30,7 +33,7 @@ from domdf_python_tools.stringlist import DelimitedList
 __all__ = ["token_option", "version_callback"]
 
 
-def token_option(token_var: str = "GITHUB_TOKEN"):
+def token_option(token_var: str = "GITHUB_TOKEN") -> Callable:  # nosec: B107
 
 	return click.option(
 			"-t",
