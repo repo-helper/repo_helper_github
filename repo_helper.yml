@@ -29,7 +29,7 @@ keywords:
 
 
 extra_sphinx_extensions:
- - sphinx_click_tweak
+ - sphinx_click
 
 intersphinx_mapping:
  - "'pygithub': ('https://pygithub.readthedocs.io/en/latest', None)"
