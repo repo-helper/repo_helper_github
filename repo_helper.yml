@@ -16,3 +16,14 @@ enable_docs: False
 entry_points:
  repo_helper.command:
   - repo_helper_github=repo_helper_github:github
+
+python_versions:
+ - 3.6
+ - 3.7
+ - 3.8
+ - 3.9
+ - 3.10-dev
+
+keywords:
+ - github
+ - repo-helper
