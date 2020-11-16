@@ -30,7 +30,7 @@ Manage GitHub repositories with repo-helper.
 import sys
 from contextlib import contextmanager
 from functools import partial
-from typing import Dict
+from typing import Dict, List
 
 # 3rd party
 import click
@@ -38,12 +38,14 @@ from consolekit import CONTEXT_SETTINGS
 from consolekit.utils import abort
 from domdf_python_tools.paths import PathPlus
 from domdf_python_tools.stringlist import DelimitedList
-from dulwich.errors import NotGitRepository
-from github import AuthenticatedUser, Github, GithubException, Repository
+from dulwich.errors import NotGitRepository  # type: ignore
+from github import Github, GithubException
+from github.AuthenticatedUser import AuthenticatedUser
+from github.Repository import Repository
 from repo_helper.cli import cli_group
 from repo_helper.core import RepoHelper
 from southwark.repo import Repo
-from typing_extensions import NoReturn
+from typing_extensions import NoReturn, TypedDict
 
 # this package
 from repo_helper_github.options import token_option, verbose_option, version_callback, version_option
@@ -59,6 +61,24 @@ __all__ = [
 		"new",
 		"update",
 		]
+
+
+class _EditKwargs(TypedDict, total=False):
+	description: str
+	homepage: str
+	private: bool
+	has_issues: bool
+	has_projects: bool
+	has_wiki: bool
+	has_downloads: bool
+	allow_squash_merge: bool
+	allow_merge_commit: bool
+	allow_rebase_merge: bool
+
+
+class _ExcData(TypedDict):
+	message: str
+	errors: List[Dict[str, str]]
 
 
 @version_option(version_callback)
@@ -191,10 +211,12 @@ class GithubManager(RepoHelper):
 		repo.replace_topics(sorted(topics))
 
 	def handle_exception(self, exc: GithubException) -> NoReturn:
-		raise abort(f"{exc.data['message']}\n{DelimitedList(i['message'] for i in exc.data['errors']):\t\n}")
+		data: _ExcData = exc.data  # type: ignore
+		errors = DelimitedList(i["message"] for i in data["errors"])
+		raise abort(f"{exc.data['message']}\n{errors:\t\n}")
 
-	def get_repo_kwargs(self) -> Dict[str, str]:
-		edit_kwargs = {"description": self.templates.globals["short_desc"]}
+	def get_repo_kwargs(self) -> _EditKwargs:
+		edit_kwargs: _EditKwargs = {"description": self.templates.globals["short_desc"]}
 
 		if self.templates.globals["enable_docs"]:
 			edit_kwargs["homepage"] = "https://{repo_name}.readthedocs.io".format_map(self.templates.globals)
