@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-#  options.py
+#  _types.py
 #
 #  Copyright © 2020 Dominic Davis-Foster <dominic@davis-foster.co.uk>
 #
@@ -23,42 +23,26 @@
 #  OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
+# stdlib
+from typing import Dict, List
+
 # 3rd party
-import click
-from domdf_python_tools.stringlist import DelimitedList
-
-__all__ = ["token_option", "version_callback"]
+from typing_extensions import TypedDict
 
 
-def token_option(token_var: str = "GITHUB_TOKEN"):
-
-	return click.option(
-			"-t",
-			"--token",
-			type=click.STRING,
-			help=(
-					"The token to authenticate with the GitHub API. "
-					f"Can also be provided via the '{token_var}' environment variable."
-					),
-			envvar=token_var,
-			required=True,
-			)
+class _EditKwargs(TypedDict, total=False):
+	description: str
+	homepage: str
+	private: bool
+	has_issues: bool
+	has_projects: bool
+	has_wiki: bool
+	has_downloads: bool
+	allow_squash_merge: bool
+	allow_merge_commit: bool
+	allow_rebase_merge: bool
 
 
-def version_callback(ctx, param, value):
-	# 3rd party
-	import repo_helper
-
-	# this package
-	from repo_helper_github import __version__
-
-	if not value or ctx.resilient_parsing:
-		return
-
-	parts = DelimitedList([f"repo_helper_github version {__version__}"])
-
-	if value > 1:
-		parts.append(f"repo_helper {repo_helper.__version__}")
-
-	click.echo(f"{parts:, }", color=ctx.color)
-	ctx.exit()
+class _ExcData(TypedDict):
+	message: str
+	errors: List[Dict[str, str]]

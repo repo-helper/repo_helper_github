@@ -30,14 +30,15 @@ Manage GitHub repositories with repo-helper.
 import sys
 from contextlib import contextmanager
 from functools import partial
-from typing import Dict, List
 
 # 3rd party
 import click
 from consolekit import CONTEXT_SETTINGS
+from consolekit.options import verbose_option, version_option
 from consolekit.utils import abort
 from domdf_python_tools.paths import PathPlus
 from domdf_python_tools.stringlist import DelimitedList
+from domdf_python_tools.typing import PathLike
 from dulwich.errors import NotGitRepository  # type: ignore
 from github import Github, GithubException
 from github.AuthenticatedUser import AuthenticatedUser
@@ -45,10 +46,11 @@ from github.Repository import Repository
 from repo_helper.cli import cli_group
 from repo_helper.core import RepoHelper
 from southwark.repo import Repo
-from typing_extensions import NoReturn, TypedDict
+from typing_extensions import NoReturn
 
 # this package
-from repo_helper_github.options import token_option, verbose_option, version_callback, version_option
+from repo_helper_github._types import _EditKwargs, _ExcData
+from repo_helper_github.options import token_option, version_callback
 
 __author__: str = "Dominic Davis-Foster"
 __copyright__: str = "2020 Dominic Davis-Foster"
@@ -60,25 +62,10 @@ __all__ = [
 		"github",
 		"new",
 		"update",
+		"github_command",
+		"echo_rate_limit",
+		"GithubManager",
 		]
-
-
-class _EditKwargs(TypedDict, total=False):
-	description: str
-	homepage: str
-	private: bool
-	has_issues: bool
-	has_projects: bool
-	has_wiki: bool
-	has_downloads: bool
-	allow_squash_merge: bool
-	allow_merge_commit: bool
-	allow_rebase_merge: bool
-
-
-class _ExcData(TypedDict):
-	message: str
-	errors: List[Dict[str, str]]
 
 
 @version_option(version_callback)
@@ -92,7 +79,7 @@ def github():
 github_command = partial(github.command, context_settings=CONTEXT_SETTINGS)
 
 
-@verbose_option()
+@verbose_option(help="Show information on the GitHub API rate limit.")
 @token_option()
 @github_command()
 def new(token: str, verbose: bool = False):
@@ -100,10 +87,10 @@ def new(token: str, verbose: bool = False):
 	Create a new GitHub repository for this project.
 	"""
 
-	sys.exit(GithubManager(token).new(verbose))
+	sys.exit(GithubManager(token, PathPlus.cwd()).new(verbose))
 
 
-@verbose_option()
+@verbose_option(help="Show information on the GitHub API rate limit.")
 @token_option()
 @github_command()
 def update(token: str, verbose: bool = False):
@@ -111,11 +98,18 @@ def update(token: str, verbose: bool = False):
 	Update the GitHub repository for this project.
 	"""
 
-	sys.exit(GithubManager(token).update(verbose))
+	sys.exit(GithubManager(token, PathPlus.cwd()).update(verbose))
 
 
 @contextmanager
 def echo_rate_limit(github: Github, verbose: bool = True):
+	"""
+	Contextmanager to echo the GitHub API rate limit before and after making a series of requests.
+
+	:param github:
+	:param verbose: If :py:obj:`False` no output will be printed.
+	"""
+
 	rate = github.get_rate_limit()
 	remaining_requests = rate.core.remaining
 
@@ -135,19 +129,28 @@ def echo_rate_limit(github: Github, verbose: bool = True):
 
 class GithubManager(RepoHelper):
 	"""
+	Subclass of :class:`repo_helper.core.RepoHelper`
+	with additional functions to update the repository metadata on GitHub.
 
 	:param token: The token to authenticate with the GitHub API.
+	:param target_repo: The path to the root of the repository to manage files for.
+	:param managed_message: Message placed at the top of files to indicate that they are managed by ``repo_helper``.
 	"""
 
-	def __init__(self, token: str):
-		super().__init__(PathPlus.cwd())
+	def __init__(
+			self,
+			token: str,
+			target_repo: PathLike,
+			managed_message="This file is managed by 'repo_helper'. Don't edit it directly."
+			):
+		super().__init__(target_repo, managed_message)
 		self.github = Github(token)
 
 	def new(self, verbose: bool = False) -> int:
 		"""
 		Create a new GitHub repository for this project.
 
-		:param verbose:
+		:param verbose: Whether to show information on the GitHub API rate limit.
 		"""
 
 		with echo_rate_limit(self.github, verbose):
@@ -177,7 +180,7 @@ class GithubManager(RepoHelper):
 		"""
 		Update the GitHub repository for this project.
 
-		:param verbose:
+		:param verbose: Whether to show information on the GitHub API rate limit.
 		"""
 
 		with echo_rate_limit(self.github, verbose):
@@ -196,6 +199,12 @@ class GithubManager(RepoHelper):
 		return 0
 
 	def assert_matching_usernames(self, user: AuthenticatedUser):
+		"""
+		Assert that the username configured in ``repo_helper.yml`` matches that of the authenticated user.
+
+		:param user:
+		"""
+
 		if user.login != self.templates.globals["username"]:
 			raise abort(
 					f"The username configured in 'repo_helper.yml' ({self.templates.globals['username']}) "
@@ -203,6 +212,11 @@ class GithubManager(RepoHelper):
 					)
 
 	def update_topics(self, repo: Repository):
+		"""
+		Update the repository's topics.
+
+		:param repo:
+		"""
 		# TODO: other languages detected in repo
 
 		topics = set(repo.get_topics())
@@ -210,12 +224,25 @@ class GithubManager(RepoHelper):
 		topics.update(self.templates.globals["keywords"])
 		repo.replace_topics(sorted(topics))
 
-	def handle_exception(self, exc: GithubException) -> NoReturn:
+	@staticmethod
+	def handle_exception(exc: GithubException) -> NoReturn:
+		"""
+		Handle an exception raised by the GitHub REST API.
+
+		:param exc:
+
+		:raises: :class:`click.Abort`
+		"""
+
 		data: _ExcData = exc.data  # type: ignore
 		errors = DelimitedList(i["message"] for i in data["errors"])
 		raise abort(f"{exc.data['message']}\n{errors:\t\n}")
 
 	def get_repo_kwargs(self) -> _EditKwargs:
+		"""
+		Returns the keyword arguments used when creating and updating repositories.
+		"""
+
 		edit_kwargs: _EditKwargs = {"description": self.templates.globals["short_desc"]}
 
 		if self.templates.globals["enable_docs"]:
