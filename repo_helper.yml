@@ -11,7 +11,6 @@ short_desc: "Manage GitHub repositories with repo-helper."
 
 enable_conda: False
 enable_tests: False
-enable_docs: False
 
 entry_points:
  repo_helper.command:
@@ -27,3 +26,11 @@ python_versions:
 keywords:
  - github
  - repo-helper
+
+
+extra_sphinx_extensions:
+ - sphinx_click_tweak
+
+intersphinx_mapping:
+ - "'pygithub': ('https://pygithub.readthedocs.io/en/latest', None)"
+ - "'click': ('https://click.palletsprojects.com/en/7.x/', None)"

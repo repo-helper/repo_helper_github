@@ -15,6 +15,8 @@ repo_helper_github
 	:stub-columns: 1
 	:widths: 10 90
 
+	* - Docs
+	  - |docs| |docs_check|
 	* - Tests
 	  - |travis| |actions_windows| |actions_macos| |codefactor| |pre_commit_ci|
 	* - PyPI
@@ -24,7 +26,13 @@ repo_helper_github
 	* - Other
 	  - |license| |language| |requires| |pre_commit|
 
+.. |docs| image:: https://img.shields.io/readthedocs/repo_helper_github/latest?logo=read-the-docs
+	:target: https://repo_helper_github.readthedocs.io/en/latest/?badge=latest
+	:alt: Documentation Build Status
 
+.. |docs_check| image:: https://github.com/domdfcoding/repo_helper_github/workflows/Docs%20Check/badge.svg
+	:target: https://github.com/domdfcoding/repo_helper_github/actions?query=workflow%3A%22Docs+Check%22
+	:alt: Docs Check Status
 
 .. |travis| image:: https://img.shields.io/travis/com/domdfcoding/repo_helper_github/master?logo=travis
 	:target: https://travis-ci.com/domdfcoding/repo_helper_github
