@@ -77,7 +77,7 @@ repo_helper_github
 .. |language| image:: https://img.shields.io/github/languages/top/domdfcoding/repo_helper_github
 	:alt: GitHub top language
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/domdfcoding/repo_helper_github/v0.1.0
+.. |commits-since| image:: https://img.shields.io/github/commits-since/domdfcoding/repo_helper_github/v0.1.1
 	:target: https://github.com/domdfcoding/repo_helper_github/pulse
 	:alt: GitHub commits since tagged version
 
