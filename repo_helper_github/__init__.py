@@ -39,7 +39,7 @@ from consolekit.utils import abort
 from domdf_python_tools.paths import PathPlus
 from domdf_python_tools.stringlist import DelimitedList
 from domdf_python_tools.typing import PathLike
-from dulwich.errors import NotGitRepository  # type: ignore
+from dulwich.errors import NotGitRepository
 from dulwich.porcelain import fetch
 from github import Github, GithubException
 from github.AuthenticatedUser import AuthenticatedUser
