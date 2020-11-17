@@ -40,6 +40,7 @@ from domdf_python_tools.paths import PathPlus
 from domdf_python_tools.stringlist import DelimitedList
 from domdf_python_tools.typing import PathLike
 from dulwich.errors import NotGitRepository  # type: ignore
+from dulwich.porcelain import fetch
 from github import Github, GithubException
 from github.AuthenticatedUser import AuthenticatedUser
 from github.Repository import Repository
@@ -166,13 +167,16 @@ class GithubManager(RepoHelper):
 			click.echo(f"Success! View the repository online at {repo.html_url}")
 
 			try:
-				# Try to set the upstream url, or fail silently
-				config = Repo('.').get_config()
-				config.set(("remote", "origin"), "url", repo.ssh_url.encode("UTF-8"))
-				config.write_to_path()
-
+				dulwich_repo = Repo('.')
 			except NotGitRepository:
-				pass
+				return 0
+
+			config = dulwich_repo.get_config()
+			config.set(("remote", "origin"), "url", repo.ssh_url.encode("UTF-8"))
+			config.set(("remote", "origin"), "fetch", b"+refs/heads/*:refs/remotes/origin/*")
+			config.write_to_path()
+
+			fetch(dulwich_repo, remote_location="origin")
 
 		return 0
 
