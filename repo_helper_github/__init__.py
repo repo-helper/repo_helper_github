@@ -80,7 +80,7 @@ def github():
 github_command = partial(github.command, context_settings=CONTEXT_SETTINGS)
 
 
-@verbose_option(help="Show information on the GitHub API rate limit.")
+@verbose_option(help_text="Show information on the GitHub API rate limit.")
 @token_option()
 @github_command()
 def new(token: str, verbose: bool = False):
@@ -91,7 +91,7 @@ def new(token: str, verbose: bool = False):
 	sys.exit(GithubManager(token, PathPlus.cwd()).new(verbose))
 
 
-@verbose_option(help="Show information on the GitHub API rate limit.")
+@verbose_option(help_text="Show information on the GitHub API rate limit.")
 @token_option()
 @github_command()
 def update(token: str, verbose: bool = False):
