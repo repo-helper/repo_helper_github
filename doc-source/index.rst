@@ -117,17 +117,11 @@ Installation
 .. toctree::
 	:maxdepth: 3
 	:caption: Documentation
-	:glob:
 
 	installation
 	usage
 	api
-
-.. toctree::
-	:maxdepth: 3
-	:caption: Contributing
-
-	contributing
+	contrib
 	Source
 
 .. start links
