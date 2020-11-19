@@ -98,6 +98,14 @@ repo_helper_github
 
 .. end shields
 
+.. start installation
+
+.. installation:: repo_helper_github
+	:pypi:
+	:github:
+
+.. end installation
+
 .. toctree::
 	:hidden:
 
@@ -107,10 +115,9 @@ repo_helper_github
 	:maxdepth: 3
 	:caption: Documentation
 
-	installation
 	usage
 	api
-	contrib
+	contributing
 	Source
 
 .. start links

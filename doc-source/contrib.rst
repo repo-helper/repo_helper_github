@@ -1,5 +1,0 @@
-===============
-Contributing
-===============
-
-.. include:: contributing.rst
