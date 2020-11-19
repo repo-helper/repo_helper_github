@@ -98,17 +98,6 @@ repo_helper_github
 
 .. end shields
 
-Installation
----------------
-
-.. start installation
-
-.. installation:: repo_helper_github
-	:pypi:
-	:github:
-
-.. end installation
-
 .. toctree::
 	:hidden:
 
