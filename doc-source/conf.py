@@ -70,12 +70,22 @@ intersphinx_mapping = {
 		}
 
 html_theme = "furo"
-html_theme_options = {}
+html_theme_options = {
+		"light_css_variables": {
+				"toc-title-font-size": "12pt",
+				"toc-font-size": "12pt",
+				"admonition-font-size": "12pt",
+				},
+		"dark_css_variables": {
+				"toc-title-font-size": "12pt",
+				"toc-font-size": "12pt",
+				"admonition-font-size": "12pt",
+				},
+		}
 html_theme_path = ["../.."]
 html_show_sourcelink = True  # True will show link to source
 
 html_context = {}
-
 htmlhelp_basename = slug
 
 latex_documents = [("index", f'{slug}.tex', project, author, "manual")]
