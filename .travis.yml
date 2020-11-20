@@ -7,59 +7,20 @@ dist: focal
 cache: pip
 python:
   - '3.6'
-  - '3.7'
-  - '3.8'
-  - '3.9'
-  - '3.10-dev'
-
 arch:
-  - amd64
   - arm64
 install:
 
   - pip install --upgrade pip
   - pip install tox tox-travis
 
-
 script:
   - tox -vv
 
-
 stages:
   - test
-  - deploy_pypi
 
 
 jobs:
   allow_failures:
     - arch: arm64
-    - python: ['3.10-dev']
-
-  exclude:
-    - python: '3.7'
-      arch: arm64
-    - python: '3.8'
-      arch: arm64
-    - python: '3.9'
-      arch: arm64
-    - python: '3.10-dev'
-      arch: arm64
-
-  include:
-    - stage: test
-      dist: bionic
-      python: 3.8
-
-    - stage: deploy_pypi
-      python: "3.6"
-      script: skip
-      deploy:
-        on:
-          tags: true
-          repo: domdfcoding/repo_helper_github
-        provider: pypi
-        username: "DomDF"
-        password:
-          secure: mCuyM6RFwcMMB6TMDDk4xEWTVyQA9sNYaLHPDovEpPsFl0kV4p20i4S4ahbpp4OjlGlTqxiQ4rSeEWsOO2f0ot7Qd51aOJtkzFGujdQ+DUKQjWyDLFJltaPDnjars4YfGknkaJtBzSsq1+HOCaUQQl/QsVJjQBOXRtvKeo4o0WVd0zLRnA3tMzeooRPtg3aW6Xfs+tS+xw5jU3H5CiJCKJMuAUa/aHlKyQI8EKcoaX4JFFYnofp02V62yUpOmV8yrVEjPnvqOBmnRXxV/nr72YH0rO4gh6xSNDWDq7cuLJcztR2abUcGqSc7aql+YzW7/cWP2pg4rqcSfP38Q4ZXNwRu+Su5JhdTN2KhT4Ndm+6aggJ/7eWchpcDBjOXn77KIK/7KLvxvOKCjow0HyV4JA2/CAY2nfXwHF0Rlw4iMOUXViXzkafVv+nWGEyQWuBf66J7KIMxchXjOYN8JQ7OHcFHr5yy752I8uVEzg0ZJOn6xhLFpXeIurIV6zvHZrivzmK2oUD4F7qCGXmFimvtybTwFxI44JpSk1CxXOiB0XRdu71lWM502d2bNvDR1KYz+dSNvXU5s5xNPd3q70y8qkOEjWVeaHj1BDaXH5/nkEEzrxxdrZ6muEGrzCROx211KwGETW439CvV0e7CsN1bucAA/dd7rrAj9cXmy/fvjis=
-        distributions: "sdist bdist_wheel"
-        skip_existing: true
