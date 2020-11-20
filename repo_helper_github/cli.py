@@ -34,11 +34,9 @@ from typing import Optional
 # 3rd party
 from consolekit import CONTEXT_SETTINGS
 from consolekit.options import colour_option, verbose_option, version_option
-from domdf_python_tools.paths import PathPlus
 from repo_helper.cli import cli_group
 
 # this package
-from repo_helper_github import GithubManager
 from repo_helper_github.options import token_option, version_callback
 
 __all__ = [
@@ -69,6 +67,12 @@ def new(token: str, verbose: bool = False, colour: Optional[bool] = None):
 	Create a new GitHub repository for this project.
 	"""
 
+	# 3rd party
+	from domdf_python_tools.paths import PathPlus
+
+	# this package
+	from repo_helper_github import GithubManager
+
 	sys.exit(GithubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).new())
 
 
@@ -81,6 +85,12 @@ def update(token: str, verbose: bool = False, colour: Optional[bool] = None):
 	Update the GitHub repository for this project.
 	"""
 
+	# 3rd party
+	from domdf_python_tools.paths import PathPlus
+
+	# this package
+	from repo_helper_github import GithubManager
+
 	sys.exit(GithubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).update())
 
 
@@ -92,5 +102,11 @@ def secrets(token: str, verbose: bool = False, colour: Optional[bool] = None):
 	"""
 	Set or update the secrets of the GitHub repository for this project.
 	"""
+
+	# 3rd party
+	from domdf_python_tools.paths import PathPlus
+
+	# this package
+	from repo_helper_github import GithubManager
 
 	sys.exit(GithubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).secrets())
