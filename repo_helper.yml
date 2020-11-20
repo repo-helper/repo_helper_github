@@ -14,7 +14,7 @@ enable_tests: False
 
 entry_points:
  repo_helper.command:
-  - repo_helper_github=repo_helper_github:github
+  - repo_helper_github=repo_helper_github.cli:github
 
 python_versions:
  - 3.6

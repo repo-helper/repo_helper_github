@@ -27,16 +27,16 @@ Manage GitHub repositories with repo-helper.
 #
 
 # stdlib
-import sys
+from base64 import b64encode
 from contextlib import contextmanager
-from functools import partial
+from getpass import getpass
 
 # 3rd party
 import click
-from consolekit import CONTEXT_SETTINGS
-from consolekit.options import verbose_option, version_option
+from apeye import RequestsURL
+from consolekit.input import confirm
+from consolekit.terminal_colours import Fore, resolve_color_default
 from consolekit.utils import abort
-from domdf_python_tools.paths import PathPlus
 from domdf_python_tools.stringlist import DelimitedList
 from domdf_python_tools.typing import PathLike
 from dulwich.errors import NotGitRepository
@@ -44,13 +44,14 @@ from dulwich.porcelain import fetch
 from github import Github, GithubException
 from github.AuthenticatedUser import AuthenticatedUser
 from github.Repository import Repository
-from repo_helper.cli import cli_group
+from nacl import encoding, public
 from repo_helper.core import RepoHelper
 from southwark.repo import Repo
 from typing_extensions import NoReturn
 
 # this package
 from repo_helper_github._types import _EditKwargs, _ExcData
+from repo_helper_github.cli import github_command
 from repo_helper_github.options import token_option, version_callback
 
 __author__: str = "Dominic Davis-Foster"
@@ -60,46 +61,11 @@ __version__: str = "0.1.2"
 __email__: str = "dominic@davis-foster.co.uk"
 
 __all__ = [
-		"github",
-		"new",
-		"update",
 		"github_command",
 		"echo_rate_limit",
 		"GithubManager",
+		"encrypt_secret",
 		]
-
-
-@version_option(version_callback)
-@cli_group(invoke_without_command=False)
-def github():
-	"""
-	Manage a GitHub repo.
-	"""
-
-
-github_command = partial(github.command, context_settings=CONTEXT_SETTINGS)
-
-
-@verbose_option(help_text="Show information on the GitHub API rate limit.")
-@token_option()
-@github_command()
-def new(token: str, verbose: bool = False):
-	"""
-	Create a new GitHub repository for this project.
-	"""
-
-	sys.exit(GithubManager(token, PathPlus.cwd()).new(verbose))
-
-
-@verbose_option(help_text="Show information on the GitHub API rate limit.")
-@token_option()
-@github_command()
-def update(token: str, verbose: bool = False):
-	"""
-	Update the GitHub repository for this project.
-	"""
-
-	sys.exit(GithubManager(token, PathPlus.cwd()).update(verbose))
 
 
 @contextmanager
@@ -136,25 +102,59 @@ class GithubManager(RepoHelper):
 	:param token: The token to authenticate with the GitHub API.
 	:param target_repo: The path to the root of the repository to manage files for.
 	:param managed_message: Message placed at the top of files to indicate that they are managed by ``repo_helper``.
+	:param verbose: Whether to show information on the GitHub API rate limit.
+	:param colour: Whether to use coloured output.
+
+	.. versionchanged:: 0.2.0
+
+		Added the ``verbose`` and ``colour`` options.
+	"""
+
+	#:
+	github: Github
+
+	verbose: bool
+	"""
+	Whether to show information on the GitHub API rate limit.
+
+	.. versionadded: 0.2.0
+	"""
+
+	colour: bool
+	"""
+	Whether to use coloured output.
+
+	.. versionadded: 0.2.0
 	"""
 
 	def __init__(
 			self,
 			token: str,
 			target_repo: PathLike,
-			managed_message="This file is managed by 'repo_helper'. Don't edit it directly."
+			managed_message="This file is managed by 'repo_helper'. Don't edit it directly.",
+			*,
+			verbose: bool = False,
+			colour: bool = True,
 			):
 		super().__init__(target_repo, managed_message)
-		self.github = Github(token)
 
-	def new(self, verbose: bool = False) -> int:
+		self.github = Github(token)
+		self.verbose = verbose
+		self.colour = resolve_color_default(colour)
+
+	def echo_rate_limit(self):
+		return echo_rate_limit(self.github, self.verbose)
+
+	def new(self) -> int:
 		"""
 		Create a new GitHub repository for this project.
 
-		:param verbose: Whether to show information on the GitHub API rate limit.
+		.. versionchanged:: 0.2.0
+
+			Removed the ``verbose`` option. Provide it to the class constructor instead.
 		"""
 
-		with echo_rate_limit(self.github, verbose):
+		with self.echo_rate_limit():
 			user: AuthenticatedUser = self.github.get_user()
 			self.assert_matching_usernames(user)
 
@@ -180,14 +180,16 @@ class GithubManager(RepoHelper):
 
 		return 0
 
-	def update(self, verbose: bool = False) -> int:
+	def update(self) -> int:
 		"""
 		Update the GitHub repository for this project.
 
-		:param verbose: Whether to show information on the GitHub API rate limit.
+		.. versionchanged:: 0.2.0
+
+			Removed the ``verbose`` option. Provide it to the class constructor instead.
 		"""
 
-		with echo_rate_limit(self.github, verbose):
+		with self.echo_rate_limit():
 			user: AuthenticatedUser = self.github.get_user()
 			self.assert_matching_usernames(user)
 
@@ -201,6 +203,67 @@ class GithubManager(RepoHelper):
 			click.echo("Up to date!")
 
 		return 0
+
+	def secrets(self) -> int:
+		"""
+		Set or update the secrets of the GitHub repository for this project.
+
+		.. versionadded: 0.2.0
+		"""
+
+		with self.echo_rate_limit():
+			user: AuthenticatedUser = self.github.get_user()
+			self.assert_matching_usernames(user)
+
+			try:
+				repo: Repository = user.get_repo(self.templates.globals["repo_name"])
+			except GithubException as e:
+				self.handle_exception(e)
+
+			repos_url = RequestsURL("https://api.github.com/repos")
+			secrets_url = repos_url / repo.owner.login / repo.name / "actions/secrets"
+			secrets_url.session.headers = {"Authorization": repo._requester._Requester__authorizationHeader}
+
+			# List of existing secrets.
+			existing_secrets = [secret["name"] for secret in secrets_url.get().json()["secrets"]]
+
+			# Public key to encrypt secrets with.
+			public_key = (secrets_url / "public-key").get().json()
+
+			ret = 0
+
+			for secret_name in ("ANACONDA_TOKEN", "PYPI_TOKEN"):
+				if secret_name in existing_secrets:
+					click.echo(f"A value for the secret {secret_name!r} already exists. ")
+					update = confirm("Do you want to update the secret?")
+				else:
+					update = True
+
+				if update:
+					operation = "create" if secret_name in existing_secrets else "update"
+
+					response = (secrets_url / secret_name).put(
+							json={
+									"encrypted_value":
+											encrypt_secret(public_key["key"], getpass(f"{secret_name}: ")),
+									"key_id":
+											public_key["key_id"],
+									},
+							)
+
+					if response.status_code != 204:
+						click.echo(
+								Fore.YELLOW(f"Could not {operation} the secret {secret_name!r}."),
+								color=self.colour,
+								)
+						ret |= 1
+					else:
+						click.echo(
+								Fore.GREEN(f"Successfully {operation}d the secret {secret_name!r}."),
+								color=self.colour,
+								)
+
+		return ret
 
 	def assert_matching_usernames(self, user: AuthenticatedUser):
 		"""
@@ -253,3 +316,19 @@ class GithubManager(RepoHelper):
 			edit_kwargs["homepage"] = "https://{repo_name}.readthedocs.io".format_map(self.templates.globals)
 
 		return edit_kwargs
+
+
+def encrypt_secret(public_key: str, secret_value: str) -> str:
+	"""
+	Encrypt a GitHub Actions secret.
+
+	:param public_key:
+	:param secret_value:
+
+	.. versionadded: 0.2.0
+	"""
+
+	public_key = public.PublicKey(public_key.encode("utf-8"), encoding.Base64Encoder())
+	sealed_box = public.SealedBox(public_key)
+	encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
+	return b64encode(encrypted).decode("utf-8")
