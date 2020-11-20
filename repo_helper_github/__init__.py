@@ -225,6 +225,7 @@ class GithubManager(RepoHelper):
 			secrets_url = repos_url / repo.owner.login / repo.name / "actions/secrets"
 			secrets_url.session.headers = {
 					"Authorization": repo._requester._Requester__authorizationHeader,  # type: ignore
+					"user-agent": "repo_helper_github",
 					}
 
 			# List of existing secrets.
