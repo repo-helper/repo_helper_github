@@ -254,11 +254,9 @@ class GithubManager(RepoHelper):
 									},
 							)
 
-					if response.status_code != 204:
-						click.echo(
-								Fore.YELLOW(f"Could not {operation} the secret {secret_name!r}."),
-								color=self.colour,
-								)
+					if response.status_code not in {200, 201, 204}:
+						message = f"Could not {operation} the secret {secret_name!r}: Status {response.status_code}"
+						click.echo(Fore.YELLOW(message), color=self.colour)
 						ret |= 1
 					else:
 						click.echo(
