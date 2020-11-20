@@ -235,8 +235,12 @@ class GithubManager(RepoHelper):
 			public_key = (secrets_url / "public-key").get().json()
 
 			ret = 0
+			target_secrets = {"PYPI_TOKEN"}
 
-			for secret_name in ("ANACONDA_TOKEN", "PYPI_TOKEN"):
+			if self.templates.globals["enable_conda"]:
+				target_secrets.add("ANACONDA_TOKEN")
+
+			for secret_name in sorted(target_secrets):
 				if secret_name in existing_secrets:
 					click.echo(f"A value for the secret {secret_name!r} already exists. ")
 					update = confirm("Do you want to update the secret?")
