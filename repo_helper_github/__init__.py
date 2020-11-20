@@ -30,6 +30,7 @@ Manage GitHub repositories with repo-helper.
 from base64 import b64encode
 from contextlib import contextmanager
 from getpass import getpass
+from typing import Optional
 
 # 3rd party
 import click
@@ -44,7 +45,7 @@ from dulwich.porcelain import fetch
 from github import Github, GithubException
 from github.AuthenticatedUser import AuthenticatedUser
 from github.Repository import Repository
-from nacl import encoding, public
+from nacl import encoding, public  # type: ignore
 from repo_helper.core import RepoHelper
 from southwark.repo import Repo
 from typing_extensions import NoReturn
@@ -120,7 +121,7 @@ class GithubManager(RepoHelper):
 	.. versionadded: 0.2.0
 	"""
 
-	colour: bool
+	colour: Optional[bool]
 	"""
 	Whether to use coloured output.
 
@@ -134,7 +135,7 @@ class GithubManager(RepoHelper):
 			managed_message="This file is managed by 'repo_helper'. Don't edit it directly.",
 			*,
 			verbose: bool = False,
-			colour: bool = True,
+			colour: Optional[bool] = True,
 			):
 		super().__init__(target_repo, managed_message)
 
@@ -222,7 +223,9 @@ class GithubManager(RepoHelper):
 
 			repos_url = RequestsURL("https://api.github.com/repos")
 			secrets_url = repos_url / repo.owner.login / repo.name / "actions/secrets"
-			secrets_url.session.headers = {"Authorization": repo._requester._Requester__authorizationHeader}
+			secrets_url.session.headers = {
+					"Authorization": repo._requester._Requester__authorizationHeader,  # type: ignore
+					}
 
 			# List of existing secrets.
 			existing_secrets = [secret["name"] for secret in secrets_url.get().json()["secrets"]]
