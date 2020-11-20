@@ -259,10 +259,8 @@ class GithubManager(RepoHelper):
 						click.echo(Fore.YELLOW(message), color=self.colour)
 						ret |= 1
 					else:
-						click.echo(
-								Fore.GREEN(f"Successfully {operation}d the secret {secret_name!r}."),
-								color=self.colour,
-								)
+						message = f"Successfully {operation}d the secret {secret_name!r}."
+						click.echo(Fore.GREEN(message), color=self.colour)
 
 		return ret
 
