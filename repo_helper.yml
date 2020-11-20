@@ -41,3 +41,6 @@ sphinx_html_theme: furo
 standalone_contrib_guide: true
 
 use_travis: false
+
+additional_ignore:
+ - update_all.py
