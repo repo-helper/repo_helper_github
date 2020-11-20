@@ -58,7 +58,7 @@ from repo_helper_github.options import token_option, version_callback
 __author__: str = "Dominic Davis-Foster"
 __copyright__: str = "2020 Dominic Davis-Foster"
 __license__: str = "MIT License"
-__version__: str = "0.2.0"
+__version__: str = "0.2.1"
 __email__: str = "dominic@davis-foster.co.uk"
 
 __all__ = [
@@ -106,7 +106,7 @@ class GithubManager(RepoHelper):
 	:param verbose: Whether to show information on the GitHub API rate limit.
 	:param colour: Whether to use coloured output.
 
-	.. versionchanged:: 0.2.0
+	.. versionchanged:: 0.2.1
 
 		Added the ``verbose`` and ``colour`` options.
 	"""
@@ -118,14 +118,14 @@ class GithubManager(RepoHelper):
 	"""
 	Whether to show information on the GitHub API rate limit.
 
-	.. versionadded: 0.2.0
+	.. versionadded: 0.2.1
 	"""
 
 	colour: Optional[bool]
 	"""
 	Whether to use coloured output.
 
-	.. versionadded: 0.2.0
+	.. versionadded: 0.2.1
 	"""
 
 	def __init__(
@@ -150,7 +150,7 @@ class GithubManager(RepoHelper):
 		"""
 		Create a new GitHub repository for this project.
 
-		.. versionchanged:: 0.2.0
+		.. versionchanged:: 0.2.1
 
 			Removed the ``verbose`` option. Provide it to the class constructor instead.
 		"""
@@ -185,7 +185,7 @@ class GithubManager(RepoHelper):
 		"""
 		Update the GitHub repository for this project.
 
-		.. versionchanged:: 0.2.0
+		.. versionchanged:: 0.2.1
 
 			Removed the ``verbose`` option. Provide it to the class constructor instead.
 		"""
@@ -209,7 +209,7 @@ class GithubManager(RepoHelper):
 		"""
 		Set or update the secrets of the GitHub repository for this project.
 
-		.. versionadded: 0.2.0
+		.. versionadded: 0.2.1
 		"""
 
 		with self.echo_rate_limit():
@@ -325,7 +325,7 @@ def encrypt_secret(public_key: str, secret_value: str) -> str:
 	:param public_key:
 	:param secret_value:
 
-	.. versionadded: 0.2.0
+	.. versionadded: 0.2.1
 	"""
 
 	public_key = public.PublicKey(public_key.encode("utf-8"), encoding.Base64Encoder())
