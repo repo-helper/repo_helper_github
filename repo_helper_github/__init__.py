@@ -95,6 +95,10 @@ def echo_rate_limit(github: Github, verbose: bool = True):
 		click.echo(f"Used {used_requests} requests. {rate.core.remaining} remaining. Resets at {rate.core.reset}")
 
 
+def _lower(string: str) -> str:
+	return string.lower()
+
+
 class GithubManager(RepoHelper):
 	"""
 	Subclass of :class:`repo_helper.core.RepoHelper`
@@ -293,7 +297,7 @@ class GithubManager(RepoHelper):
 		topics = set(repo.get_topics())
 		topics.add("python")
 		topics.update(self.templates.globals["keywords"])
-		repo.replace_topics(sorted(topics))
+		repo.replace_topics(sorted(map(_lower, topics)))
 
 	@staticmethod
 	def handle_exception(exc: GithubException) -> NoReturn:
