@@ -124,6 +124,6 @@ repo_helper_github
 
 View the :ref:`Function Index <genindex>` or browse the `Source Code <_modules/index.html>`__.
 
-`Browse the GitHub Repository <https://github.com/domdfcoding/repo_helper_github>`__
+`Browse the GitHub Repository <https://github.com/repo-helper/repo_helper_github>`__
 
 .. end links
