@@ -321,7 +321,7 @@ class GithubManager(RepoHelper):
 		edit_kwargs: _EditKwargs = {"description": self.templates.globals["short_desc"]}
 
 		if self.templates.globals["enable_docs"]:
-			edit_kwargs["homepage"] = "https://{repo_name}.readthedocs.io".format_map(self.templates.globals)
+			edit_kwargs["homepage"] = self.templates.globals["docs_url"]
 
 		return edit_kwargs
 
