@@ -261,12 +261,11 @@ class GithubManager(RepoHelper):
 					encrypted_value = encrypt_secret(public_key["key"], getpass(f"{secret_name}: "))
 					key_id = public_key["key_id"]
 
-					response = (secrets_url / secret_name).put(
-							json={
-									"encrypted_value": encrypted_value,
-									"key_id": key_id,
-									},
-							)
+					response = (secrets_url / secret_name
+								).put(json={
+										"encrypted_value": encrypted_value,
+										"key_id": key_id,
+										}, )
 
 					if response.status_code not in {200, 201, 204}:
 						message = f"Could not {operation} the secret {secret_name!r}: Status {response.status_code}"
