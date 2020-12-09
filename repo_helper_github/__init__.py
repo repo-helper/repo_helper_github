@@ -113,7 +113,7 @@ class GithubManager(RepoHelper):
 	.. versionchanged:: 0.2.3
 
 		Added the ``verbose`` and ``colour`` options.
-	"""
+	"""  # noqa: D400
 
 	#:
 	github: Github
@@ -148,6 +148,10 @@ class GithubManager(RepoHelper):
 		self.colour = resolve_color_default(colour)
 
 	def echo_rate_limit(self):
+		"""
+		Contextmanager to echo the GitHub API rate limit before and after making a series of requests.
+		"""
+
 		return echo_rate_limit(self.github, self.verbose)
 
 	def new(self) -> int:
@@ -254,12 +258,13 @@ class GithubManager(RepoHelper):
 				if update:
 					operation = "create" if secret_name in existing_secrets else "update"
 
+					encrypted_value = encrypt_secret(public_key["key"], getpass(f"{secret_name}: "))
+					key_id = public_key["key_id"]
+
 					response = (secrets_url / secret_name).put(
 							json={
-									"encrypted_value":
-											encrypt_secret(public_key["key"], getpass(f"{secret_name}: ")),
-									"key_id":
-											public_key["key_id"],
+									"encrypted_value": encrypted_value,
+									"key_id": key_id,
 									},
 							)
 

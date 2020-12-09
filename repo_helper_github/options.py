@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 #
 #  options.py
+"""
+Reusable options for click.
+"""
 #
 #  Copyright © 2020 Dominic Davis-Foster <dominic@davis-foster.co.uk>
 #
@@ -34,6 +37,11 @@ __all__ = ["token_option", "version_callback"]
 
 
 def token_option(token_var: str = "GITHUB_TOKEN") -> Callable:  # nosec: B107
+	"""
+	Creates a ``-t / --token`` option for the GitHub API token.
+
+	:param token_var:
+	"""
 
 	return click.option(
 			"-t",
@@ -48,7 +56,7 @@ def token_option(token_var: str = "GITHUB_TOKEN") -> Callable:  # nosec: B107
 			)
 
 
-def version_callback(ctx, param, value):
+def version_callback(ctx, param, value):  # noqa: D103
 	# 3rd party
 	import repo_helper
 
