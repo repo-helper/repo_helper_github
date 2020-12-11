@@ -60,7 +60,7 @@ from repo_helper_github.options import token_option, version_callback
 __author__: str = "Dominic Davis-Foster"
 __copyright__: str = "2020 Dominic Davis-Foster"
 __license__: str = "MIT License"
-__version__: str = "0.2.3"
+__version__: str = "0.3.0"
 __email__: str = "dominic@davis-foster.co.uk"
 
 __all__ = [
@@ -112,7 +112,7 @@ class GitHubManager(RepoHelper):
 	:param verbose: Whether to show information on the GitHub API rate limit.
 	:param colour: Whether to use coloured output.
 
-	.. versionchanged:: 0.2.3
+	.. versionchanged:: 0.3.0
 
 		Added the ``verbose`` and ``colour`` options.
 	"""  # noqa: D400
@@ -124,14 +124,14 @@ class GitHubManager(RepoHelper):
 	"""
 	Whether to show information on the GitHub API rate limit.
 
-	.. versionadded: 0.2.3
+	.. versionadded: 0.3.0
 	"""
 
 	colour: Optional[bool]
 	"""
 	Whether to use coloured output.
 
-	.. versionadded: 0.2.3
+	.. versionadded: 0.3.0
 	"""
 
 	def __init__(
@@ -163,7 +163,7 @@ class GitHubManager(RepoHelper):
 		:param org: Whether the repository should be created for the organisation set as ``username``,
 			or for the authenticated user (default).
 
-		.. versionchanged:: 0.2.3
+		.. versionchanged:: 0.3.0
 
 			Removed the ``verbose`` option. Provide it to the class constructor instead.
 
@@ -202,7 +202,7 @@ class GitHubManager(RepoHelper):
 		:param org: Whether the repository should be created for the organisation set as ``username``,
 			or for the authenticated user (default).
 
-		.. versionchanged:: 0.2.3
+		.. versionchanged:: 0.3.0
 
 			Removed the ``verbose`` option. Provide it to the class constructor instead.
 
@@ -253,7 +253,7 @@ class GitHubManager(RepoHelper):
 		:param org: Whether the repository should be created for the organisation set as ``username``,
 			or for the authenticated user (default).
 
-		.. versionadded:: 0.2.3
+		.. versionadded:: 0.3.0
 
 		.. versionchanged:: 0.3.0  Added the ``org`` argument.
 		"""
@@ -386,7 +386,7 @@ def encrypt_secret(public_key: str, secret_value: str) -> str:
 	:param public_key:
 	:param secret_value:
 
-	.. versionadded: 0.2.3
+	.. versionadded: 0.3.0
 	"""
 
 	public_key = public.PublicKey(public_key.encode("utf-8"), encoding.Base64Encoder())
