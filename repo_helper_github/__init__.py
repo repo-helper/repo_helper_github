@@ -235,9 +235,9 @@ class GitHubManager(RepoHelper):
 		:param org:
 
 		.. versionadded:: 0.3.0
-		"""
+		"""  # noqa: D400
 
-		user: Union[Organization, AuthenticatedUser] = self.github.get_user()
+		user = self.github.get_user()
 
 		if org:
 			self.assert_org_member(user)

@@ -63,11 +63,12 @@ def org_option() -> Callable:
 	.. versionadded: 0.3.0
 	"""
 
+	desc = "Indicates the repository belongs to the organisation configured as 'username' in repo_helper.yml."
+
 	return click.option(
 			"--org",
 			type=click.STRING,
-			help=
-			"Indicates the repository belongs to the organisation configured as 'username' in repo_helper.yml.",
+			help=desc,
 			is_flag=True,
 			default=False,
 			)
