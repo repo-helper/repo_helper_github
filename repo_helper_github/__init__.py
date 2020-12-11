@@ -30,7 +30,7 @@ Manage GitHub repositories with ``repo-helper``.
 from base64 import b64encode
 from contextlib import contextmanager
 from getpass import getpass
-from typing import Optional
+from typing import Optional, Union
 
 # 3rd party
 import click
@@ -44,6 +44,8 @@ from dulwich.errors import NotGitRepository
 from dulwich.porcelain import fetch
 from github import Github, GithubException
 from github.AuthenticatedUser import AuthenticatedUser
+from github.GithubException import UnknownObjectException
+from github.Organization import Organization
 from github.Repository import Repository
 from nacl import encoding, public  # type: ignore
 from repo_helper.core import RepoHelper
@@ -64,7 +66,7 @@ __email__: str = "dominic@davis-foster.co.uk"
 __all__ = [
 		"github_command",
 		"echo_rate_limit",
-		"GithubManager",
+		"GitHubManager",
 		"encrypt_secret",
 		]
 
@@ -99,7 +101,7 @@ def _lower(string: str) -> str:
 	return string.lower()
 
 
-class GithubManager(RepoHelper):
+class GitHubManager(RepoHelper):
 	"""
 	Subclass of :class:`repo_helper.core.RepoHelper`
 	with additional functions to update the repository metadata on GitHub.
@@ -154,18 +156,22 @@ class GithubManager(RepoHelper):
 
 		return echo_rate_limit(self.github, self.verbose)
 
-	def new(self) -> int:
+	def new(self, org: bool = False) -> int:
 		"""
 		Create a new GitHub repository for this project.
+
+		:param org: Whether the repository should be created for the organisation set as ``username``,
+			or for the authenticated user (default).
 
 		.. versionchanged:: 0.2.3
 
 			Removed the ``verbose`` option. Provide it to the class constructor instead.
+
+		.. versionchanged:: 0.3.0  Added the ``org`` argument.
 		"""
 
 		with self.echo_rate_limit():
-			user: AuthenticatedUser = self.github.get_user()
-			self.assert_matching_usernames(user)
+			user = self.get_org_or_user(org)
 
 			try:
 				repo = user.create_repo(self.templates.globals["repo_name"], **self.get_repo_kwargs())
@@ -189,18 +195,23 @@ class GithubManager(RepoHelper):
 
 		return 0
 
-	def update(self) -> int:
+	def update(self, org: bool = False) -> int:
 		"""
 		Update the GitHub repository for this project.
+
+		:param org: Whether the repository should be created for the organisation set as ``username``,
+			or for the authenticated user (default).
 
 		.. versionchanged:: 0.2.3
 
 			Removed the ``verbose`` option. Provide it to the class constructor instead.
+
+		.. versionchanged:: 0.3.0  Added the ``org`` argument.
 		"""
 
 		with self.echo_rate_limit():
-			user: AuthenticatedUser = self.github.get_user()
-			self.assert_matching_usernames(user)
+
+			user = self.get_org_or_user(org)
 
 			try:
 				repo = user.get_repo(self.templates.globals["repo_name"])
@@ -213,16 +224,42 @@ class GithubManager(RepoHelper):
 
 		return 0
 
-	def secrets(self) -> int:
+	def get_org_or_user(self, org: bool = False) -> Union[Organization, AuthenticatedUser]:
+		"""
+		If ``org`` is :py:obj:`True`, returns the :class:`~.Organization` object representing the
+		GitHub org that owns the repository.
+
+		If ``org`` is :py:obj:`False`, returns the :class:`~.AuthenticatedUser` object representing the
+		GitHub user that owns the repository.
+
+		:param org:
+
+		.. versionadded:: 0.3.0
+		"""
+
+		user: Union[Organization, AuthenticatedUser] = self.github.get_user()
+
+		if org:
+			self.assert_org_member(user)
+			return self.github.get_organization(self.templates.globals["username"])
+		else:
+			self.assert_matching_usernames(user)
+			return user
+
+	def secrets(self, org: bool = False) -> int:
 		"""
 		Set or update the secrets of the GitHub repository for this project.
 
-		.. versionadded: 0.2.3
+		:param org: Whether the repository should be created for the organisation set as ``username``,
+			or for the authenticated user (default).
+
+		.. versionadded:: 0.2.3
+
+		.. versionchanged:: 0.3.0  Added the ``org`` argument.
 		"""
 
 		with self.echo_rate_limit():
-			user: AuthenticatedUser = self.github.get_user()
-			self.assert_matching_usernames(user)
+			user = self.get_org_or_user(org)
 
 			try:
 				repo: Repository = user.get_repo(self.templates.globals["repo_name"])
@@ -283,7 +320,23 @@ class GithubManager(RepoHelper):
 		if user.login != self.templates.globals["username"]:
 			raise abort(
 					f"The username configured in 'repo_helper.yml' ({self.templates.globals['username']}) "
-					f"differs from that of the authenticated user ({user.login})!"
+					f"differs from that of the authenticated user ({user.login})!\n"
+					f"If {self.templates.globals['username']} is an organisation you should use the --org flag."
+					)
+
+	def assert_org_member(self, user: AuthenticatedUser):
+		"""
+		Assert that the organisation configured in ``repo_helper.yml`` exists, and the authenticated user is a member.
+
+		:param user:
+		"""
+
+		try:
+			user.get_organization_membership(self.templates.globals["username"])
+		except UnknownObjectException:
+			raise abort(
+					f"Either organisation configured in 'repo_helper.yml' ({self.templates.globals['username']}) "
+					f"does not exist or the authenticated user ({user.login}) is not a member!"
 					)
 
 	def update_topics(self, repo: Repository):
@@ -340,3 +393,6 @@ def encrypt_secret(public_key: str, secret_value: str) -> str:
 	sealed_box = public.SealedBox(public_key)
 	encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
 	return b64encode(encrypted).decode("utf-8")
+
+
+GithubManager = GitHubManager

@@ -33,7 +33,7 @@ from typing import Callable
 import click
 from domdf_python_tools.stringlist import DelimitedList
 
-__all__ = ["token_option", "version_callback"]
+__all__ = ["token_option", "version_callback", "org_option"]
 
 
 def token_option(token_var: str = "GITHUB_TOKEN") -> Callable:  # nosec: B107
@@ -53,6 +53,23 @@ def token_option(token_var: str = "GITHUB_TOKEN") -> Callable:  # nosec: B107
 					),
 			envvar=token_var,
 			required=True,
+			)
+
+
+def org_option() -> Callable:
+	"""
+	Creates a ``--org`` option to specify that the repository belongs to an organisation.
+
+	.. versionadded: 0.3.0
+	"""
+
+	return click.option(
+			"--org",
+			type=click.STRING,
+			help=
+			"Indicates the repository belongs to the organisation configured as 'username' in repo_helper.yml.",
+			is_flag=True,
+			default=False,
 			)
 
 

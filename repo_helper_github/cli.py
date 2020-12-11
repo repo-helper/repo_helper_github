@@ -2,7 +2,7 @@
 #
 #  cli.py
 """
-Manage GitHub repositories with repo-helper.
+Manage GitHub repositories with ``repo-helper``.
 """
 #
 #  Copyright © 2020 Dominic Davis-Foster <dominic@davis-foster.co.uk>
@@ -37,7 +37,7 @@ from consolekit.options import colour_option, verbose_option, version_option
 from repo_helper.cli import cli_group
 
 # this package
-from repo_helper_github.options import token_option, version_callback
+from repo_helper_github.options import org_option, token_option, version_callback
 
 __all__ = [
 		"github",
@@ -61,8 +61,9 @@ github_command = partial(github.command, context_settings=CONTEXT_SETTINGS)
 @colour_option()
 @verbose_option(help_text="Show information on the GitHub API rate limit.")
 @token_option()
+@org_option()
 @github_command()
-def new(token: str, verbose: bool = False, colour: Optional[bool] = None):
+def new(token: str, verbose: bool = False, colour: Optional[bool] = None, org: bool = False):
 	"""
 	Create a new GitHub repository for this project.
 	"""
@@ -71,16 +72,17 @@ def new(token: str, verbose: bool = False, colour: Optional[bool] = None):
 	from domdf_python_tools.paths import PathPlus
 
 	# this package
-	from repo_helper_github import GithubManager
+	from repo_helper_github import GitHubManager
 
-	sys.exit(GithubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).new())
+	sys.exit(GitHubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).new(org=org))
 
 
 @colour_option()
 @verbose_option(help_text="Show information on the GitHub API rate limit.")
 @token_option()
+@org_option()
 @github_command()
-def update(token: str, verbose: bool = False, colour: Optional[bool] = None):
+def update(token: str, verbose: bool = False, colour: Optional[bool] = None, org: bool = False):
 	"""
 	Update the GitHub repository for this project.
 	"""
@@ -89,16 +91,17 @@ def update(token: str, verbose: bool = False, colour: Optional[bool] = None):
 	from domdf_python_tools.paths import PathPlus
 
 	# this package
-	from repo_helper_github import GithubManager
+	from repo_helper_github import GitHubManager
 
-	sys.exit(GithubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).update())
+	sys.exit(GitHubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).update(org=org))
 
 
 @colour_option()
 @verbose_option(help_text="Show information on the GitHub API rate limit.")
 @token_option()
+@org_option()
 @github_command()
-def secrets(token: str, verbose: bool = False, colour: Optional[bool] = None):
+def secrets(token: str, verbose: bool = False, colour: Optional[bool] = None, org: bool = False):
 	"""
 	Set or update the secrets of the GitHub repository for this project.
 	"""
@@ -107,6 +110,6 @@ def secrets(token: str, verbose: bool = False, colour: Optional[bool] = None):
 	from domdf_python_tools.paths import PathPlus
 
 	# this package
-	from repo_helper_github import GithubManager
+	from repo_helper_github import GitHubManager
 
-	sys.exit(GithubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).secrets())
+	sys.exit(GitHubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).secrets(org=org))
