@@ -2,7 +2,7 @@
 #
 #  __init__.py
 """
-Manage GitHub repositories with repo-helper.
+Manage GitHub repositories with ``repo-helper``.
 """
 #
 #  Copyright © 2020 Dominic Davis-Foster <dominic@davis-foster.co.uk>
