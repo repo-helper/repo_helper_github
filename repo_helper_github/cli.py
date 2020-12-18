@@ -32,6 +32,7 @@ from functools import partial
 from typing import Optional
 
 # 3rd party
+import click
 from consolekit import CONTEXT_SETTINGS
 from consolekit.options import colour_option, verbose_option, version_option
 from repo_helper.cli import cli_group
@@ -44,6 +45,7 @@ __all__ = [
 		"new",
 		"update",
 		"github_command",
+		"protect_branch",
 		]
 
 
@@ -113,3 +115,29 @@ def secrets(token: str, verbose: bool = False, colour: Optional[bool] = None, or
 	from repo_helper_github import GitHubManager
 
 	sys.exit(GitHubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).secrets(org=org))
+
+
+@click.argument("branch", type=click.STRING)
+@colour_option()
+@verbose_option(help_text="Show information on the GitHub API rate limit.")
+@token_option()
+@org_option()
+@github_command()
+def protect_branch(
+		branch: str,
+		token: str,
+		verbose: bool = False,
+		colour: Optional[bool] = None,
+		org: bool = False,
+		):
+	"""
+	Set or update the branch protection for the given branch on GitHub.
+	"""
+
+	# 3rd party
+	from domdf_python_tools.paths import PathPlus
+
+	# this package
+	from repo_helper_github import GitHubManager
+
+	sys.exit(GitHubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).protect_branch(branch, org=org))

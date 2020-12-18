@@ -254,8 +254,6 @@ class GitHubManager(RepoHelper):
 			or for the authenticated user (default).
 
 		.. versionadded:: 0.3.0
-
-		.. versionchanged:: 0.3.0  Added the ``org`` argument.
 		"""
 
 		with self.echo_rate_limit():
@@ -309,6 +307,40 @@ class GitHubManager(RepoHelper):
 						click.echo(Fore.GREEN(message), color=self.colour)
 
 		return ret
+
+	def protect_branch(self, branch: str, org: bool = False) -> int:
+		"""
+		Update branch protection for the given branch.
+
+		This requires that the Linux and Windows tests pass, together with the mypy check.
+
+		:param branch: The branch to update protection for.
+		:param org: Whether the repository should be created for the organisation set as ``username``,
+			or for the authenticated user (default).
+
+		.. versionadded:: 0.4.0
+		"""
+
+		with self.echo_rate_limit():
+			user = self.get_org_or_user(org)
+
+			try:
+				repo: Repository = user.get_repo(self.templates.globals["repo_name"])
+			except GithubException as e:
+				self.handle_exception(e)
+
+			gh_branch = repo.get_branch(branch)
+
+			required_checks = ["mypy"]
+
+			if "Linux" in self.templates.globals["platforms"]:
+				required_checks.append("Linux")
+			if "Windows" in self.templates.globals["platforms"]:
+				required_checks.append("Linux")
+
+			gh_branch.edit_protection(strict=False, contexts=required_checks)
+
+		return 0
 
 	def assert_matching_usernames(self, user: AuthenticatedUser):
 		"""
