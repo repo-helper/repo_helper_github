@@ -30,7 +30,7 @@ Manage GitHub repositories with ``repo-helper``.
 from base64 import b64encode
 from contextlib import contextmanager
 from getpass import getpass
-from typing import Optional, Union
+from typing import Iterator, Optional, Union
 
 # 3rd party
 import click
@@ -49,6 +49,8 @@ from github.Organization import Organization
 from github.Repository import Repository
 from nacl import encoding, public  # type: ignore
 from repo_helper.core import RepoHelper
+from repo_helper.files.ci_cd import ActionsManager, platform_ci_names
+from repo_helper.utils import set_gh_actions_versions
 from southwark.repo import Repo
 from typing_extensions import NoReturn
 
@@ -68,6 +70,7 @@ __all__ = [
 		"echo_rate_limit",
 		"GitHubManager",
 		"encrypt_secret",
+		"compile_required_checks",
 		]
 
 
@@ -330,13 +333,15 @@ class GitHubManager(RepoHelper):
 				self.handle_exception(e)
 
 			gh_branch = repo.get_branch(branch)
+			required_checks = list(compile_required_checks(self))
 
-			required_checks = ["mypy"]
-
-			if "Linux" in self.templates.globals["platforms"]:
-				required_checks.append("Linux")
-			if "Windows" in self.templates.globals["platforms"]:
-				required_checks.append("Linux")
+			# gh_branch.edit_required_status_checks(strict=False, contexts=)
+			gh_branch.edit_protection(
+					strict=False,
+					contexts=required_checks,
+					dismiss_stale_reviews=False,
+					required_approving_review_count=1,
+					)
 
 			gh_branch.edit_protection(strict=False, contexts=required_checks)
 
@@ -425,6 +430,45 @@ def encrypt_secret(public_key: str, secret_value: str) -> str:
 	sealed_box = public.SealedBox(public_key)
 	encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
 	return b64encode(encrypted).decode("utf-8")
+
+
+def compile_required_checks(repo: RepoHelper) -> Iterator[str]:
+	"""
+	Returns an iterator over the names of required checks for the given repository.
+
+	:param repo:
+
+	.. versionadded:: 0.4.0
+	"""
+
+	actions_manager = ActionsManager(repo.target_repo, repo.templates)
+
+	for platform in repo.templates.globals["platforms"]:
+		if platform not in platform_ci_names:
+			continue
+
+		if platform == "Windows":
+			ci_platform = platform_ci_names[platform]
+			py_versions = actions_manager.get_windows_ci_versions()
+		elif platform == "Linux":
+			ci_platform = platform_ci_names[platform]
+			py_versions = actions_manager.get_linux_ci_versions()
+		elif platform == "macOS":
+			ci_platform = platform_ci_names[platform]
+			py_versions = actions_manager.get_macos_ci_versions()
+		else:
+			continue
+
+		for version in set_gh_actions_versions(py_versions):
+			if "alpha" in version or "beta" in version:
+				continue
+
+			yield f"{ci_platform} / Python {version}"
+
+	yield from ["mypy / ubuntu-latest", "Flake8"]
+
+	if repo.templates.globals["enable_tests"]:
+		yield "docs"
 
 
 GithubManager = GitHubManager
