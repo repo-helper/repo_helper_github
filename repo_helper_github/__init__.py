@@ -27,6 +27,7 @@ Manage GitHub repositories with ``repo-helper``.
 #
 
 # stdlib
+import tempfile
 from base64 import b64encode
 from contextlib import contextmanager
 from getpass import getpass
@@ -38,12 +39,14 @@ from apeye import RequestsURL
 from consolekit.input import confirm
 from consolekit.terminal_colours import Fore, resolve_color_default
 from consolekit.utils import abort
+from domdf_python_tools.paths import PathPlus
 from domdf_python_tools.stringlist import DelimitedList
 from domdf_python_tools.typing import PathLike
 from dulwich.errors import NotGitRepository
 from dulwich.porcelain import fetch
 from github import Github, GithubException
 from github.AuthenticatedUser import AuthenticatedUser
+from github.ContentFile import ContentFile
 from github.GithubException import UnknownObjectException
 from github.Organization import Organization
 from github.Repository import Repository
@@ -69,6 +72,7 @@ __all__ = [
 		"github_command",
 		"echo_rate_limit",
 		"GitHubManager",
+		"IsolatedGitHubManager",
 		"encrypt_secret",
 		"compile_required_checks",
 		]
@@ -478,3 +482,48 @@ def compile_required_checks(repo: RepoHelper) -> Iterator[str]:
 
 
 GithubManager = GitHubManager
+
+
+class IsolatedGitHubManager(GitHubManager):
+	"""
+	Subclass of :class:`~.GitHubManager` which can be used isolated from the repository
+	and its ``repo_helper.yml`` config file.
+
+	:param token: The token to authenticate with the GitHub API.
+
+	:param username: The username of the GitHub account hosting the repository.
+	:param repo_name: The name of GitHub repository.
+	:param managed_message: Message placed at the top of files to indicate that they are managed by ``repo_helper``.
+	:param verbose: Whether to show information on the GitHub API rate limit.
+	:param colour: Whether to use coloured output.
+
+	.. versionadded:: 0.4.0
+	"""  # noqa: D400
+
+	def __init__(
+			self,
+			token: str,
+			username: str,
+			repo_name: str,
+			*,
+			managed_message="This file is managed by 'repo_helper'. Don't edit it directly.",
+			verbose: bool = False,
+			colour: Optional[bool] = True,
+			):
+
+		self._tmpdir = tempfile.TemporaryDirectory()
+
+		self.github = Github(token)
+		self.verbose = verbose
+		self.colour = resolve_color_default(colour)
+
+		target_repo = PathPlus(self._tmpdir.name)
+		config_file_name = "repo_helper.yml"
+		contents_from_github: ContentFile = self.github.get_repo(f"{username}/{repo_name}"
+																	).get_contents("repo_helper.yml")
+		(target_repo / config_file_name).write_bytes(contents_from_github.decoded_content)
+
+		RepoHelper.__init__(self, target_repo, managed_message)
+
+	def __del__(self):
+		self._tmpdir.cleanup()
