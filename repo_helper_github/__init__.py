@@ -253,14 +253,26 @@ class GitHubManager(RepoHelper):
 			self.assert_matching_usernames(user)
 			return user
 
-	def secrets(self, org: bool = False) -> int:
+	def secrets(
+			self,
+			org: bool = False,
+			overwrite: Optional[bool] = None,
+			PYPI_TOKEN: Optional[str] = None,
+			ANACONDA_TOKEN: Optional[str] = None
+			) -> int:
 		"""
 		Set or update the secrets of the GitHub repository for this project.
 
 		:param org: Whether the repository should be created for the organisation set as ``username``,
 			or for the authenticated user (default).
+		:param overwrite: Overwrite existing values.
+		:default overwrite ask first.
+
+		``PYPI_TOKEN`` and ``ANACONDA_TOKEN`` can either be passed as keyword arguments to this function or provided at the interactive prompt.
 
 		.. versionadded:: 0.3.0
+
+		.. versionchanged:: 0.4.0  Add ``overwrite``, ``PYPI_TOKEN``, ``ANACONDA_TOKEN`` options.
 		"""
 
 		with self.echo_rate_limit():
@@ -291,7 +303,9 @@ class GitHubManager(RepoHelper):
 				target_secrets.add("ANACONDA_TOKEN")
 
 			for secret_name in sorted(target_secrets):
-				if secret_name in existing_secrets:
+				if overwrite is not None:
+					update = True
+				elif secret_name in existing_secrets:
 					click.echo(f"A value for the secret {secret_name!r} already exists. ")
 					update = confirm("Do you want to update the secret?")
 				else:
@@ -300,7 +314,11 @@ class GitHubManager(RepoHelper):
 				if update:
 					operation = "create" if secret_name in existing_secrets else "update"
 
-					encrypted_value = encrypt_secret(public_key["key"], getpass(f"{secret_name}: "))
+					encrypted_value = encrypt_secret(
+							public_key["key"],
+							secret_value=locals().get(secret_name, None) or getpass(f"{secret_name}: "),
+							)
+
 					key_id = public_key["key_id"]
 					secret_json = {"encrypted_value": encrypted_value, "key_id": key_id}
 					response = (secrets_url / secret_name).put(json=secret_json)
