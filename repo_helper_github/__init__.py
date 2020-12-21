@@ -345,6 +345,7 @@ class GitHubManager(RepoHelper):
 
 			gh_branch.edit_protection(strict=False, contexts=required_checks)
 
+		click.echo("Up to date!")
 		return 0
 
 	def assert_matching_usernames(self, user: AuthenticatedUser):
@@ -408,7 +409,12 @@ class GitHubManager(RepoHelper):
 		Returns the keyword arguments used when creating and updating repositories.
 		"""
 
-		edit_kwargs: _EditKwargs = {"description": self.templates.globals["short_desc"]}
+		# TODO: add config option for allow_merge_commit
+
+		edit_kwargs: _EditKwargs = {
+				"description": self.templates.globals["short_desc"],
+				"allow_merge_commit": False,
+				}
 
 		if self.templates.globals["enable_docs"]:
 			edit_kwargs["homepage"] = self.templates.globals["docs_url"]
