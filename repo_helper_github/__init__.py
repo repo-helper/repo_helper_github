@@ -312,7 +312,7 @@ class GitHubManager(RepoHelper):
 					update = True
 
 				if update:
-					operation = "create" if secret_name in existing_secrets else "update"
+					operation = "update" if secret_name in existing_secrets else "create"
 
 					encrypted_value = encrypt_secret(
 							public_key["key"],
