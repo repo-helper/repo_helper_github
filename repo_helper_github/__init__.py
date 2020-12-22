@@ -488,7 +488,7 @@ def compile_required_checks(repo: RepoHelper) -> Iterator[str]:
 			continue
 
 		for version in set_gh_actions_versions(py_versions):
-			if "alpha" in version or "beta" in version:
+			if "alpha" in version or "beta" in version or "-dev" in version:
 				continue
 
 			yield f"{ci_platform} / Python {version}"
