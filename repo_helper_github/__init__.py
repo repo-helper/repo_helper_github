@@ -266,7 +266,7 @@ class GitHubManager(RepoHelper):
 		:param org: Whether the repository should be created for the organisation set as ``username``,
 			or for the authenticated user (default).
 		:param overwrite: Overwrite existing values.
-		:default overwrite ask first.
+		:default overwrite: ask first.
 
 		``PYPI_TOKEN`` and ``ANACONDA_TOKEN`` can either be passed as keyword arguments to this function or provided at the interactive prompt.
 
@@ -542,8 +542,9 @@ class IsolatedGitHubManager(GitHubManager):
 
 		target_repo = PathPlus(self._tmpdir.name)
 		config_file_name = "repo_helper.yml"
-		contents_from_github: ContentFile = self.github.get_repo(f"{username}/{repo_name}"
-																	).get_contents("repo_helper.yml")
+
+		github_repo = self.github.get_repo(f"{username}/{repo_name}")
+		contents_from_github: ContentFile = github_repo.get_contents(config_file_name)  # type: ignore
 		(target_repo / config_file_name).write_bytes(contents_from_github.decoded_content)
 
 		RepoHelper.__init__(self, target_repo, managed_message)
