@@ -423,7 +423,12 @@ class GitHubManager(RepoHelper):
 		"""
 
 		data: _ExcData = exc.data  # type: ignore
-		errors = DelimitedList(i["message"] for i in data["errors"])
+
+		if "errors" in data:
+			errors = DelimitedList(i["message"] for i in data["errors"])
+		else:
+			errors = DelimitedList([data["message"]])
+
 		raise abort(f"{exc.data['message']}\n{errors:\t\n}")
 
 	def get_repo_kwargs(self) -> _EditKwargs:
