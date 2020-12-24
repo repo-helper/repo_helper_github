@@ -86,3 +86,5 @@ ipython_config.py
 Pipfile.lock
 .pyre/
 update_all.py
+auto_merge.py
+review_pre_commit_pr.py

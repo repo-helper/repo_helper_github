@@ -41,3 +41,5 @@ standalone_contrib_guide: true
 
 additional_ignore:
  - update_all.py
+ - auto_merge.py
+ - review_pre_commit_pr.py
