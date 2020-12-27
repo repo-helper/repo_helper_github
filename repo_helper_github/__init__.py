@@ -500,7 +500,7 @@ def compile_required_checks(repo: RepoHelper) -> Iterator[str]:
 
 	yield from ["mypy / ubuntu-latest", "Flake8"]
 
-	if repo.templates.globals["enable_tests"]:
+	if repo.templates.globals["enable_docs"]:
 		yield "docs"
 
 
