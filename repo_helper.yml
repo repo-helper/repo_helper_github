@@ -43,3 +43,4 @@ additional_ignore:
  - update_all.py
  - auto_merge.py
  - review_pre_commit_pr.py
+ - review_dependabot_pr.py
