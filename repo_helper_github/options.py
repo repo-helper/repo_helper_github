@@ -81,7 +81,7 @@ def version_callback(ctx, param, value):  # noqa: D103
 	# this package
 	from repo_helper_github import __version__
 
-	if not value or ctx.resilient_parsing:
+	if not value or ctx.resilient_parsing:  # pragma: no cover
 		return
 
 	parts = DelimitedList([f"repo_helper_github version {__version__}"])

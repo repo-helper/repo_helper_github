@@ -11,7 +11,6 @@ license: 'MIT'
 short_desc: "Manage GitHub repositories with repo-helper."
 
 enable_conda: False
-enable_tests: False
 
 entry_points:
  repo_helper.command:

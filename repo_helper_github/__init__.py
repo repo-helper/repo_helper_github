@@ -27,6 +27,7 @@ Manage GitHub repositories with ``repo-helper``.
 #
 
 # stdlib
+import datetime
 import tempfile
 from base64 import b64encode
 from contextlib import contextmanager
@@ -35,29 +36,26 @@ from typing import Iterator, Optional, Union
 
 # 3rd party
 import click
-from apeye import RequestsURL
+from apeye import URL
 from consolekit.input import confirm
 from consolekit.terminal_colours import Fore, resolve_color_default
 from consolekit.utils import abort
 from domdf_python_tools.paths import PathPlus
-from domdf_python_tools.stringlist import DelimitedList
 from domdf_python_tools.typing import PathLike
 from dulwich.errors import NotGitRepository
 from dulwich.porcelain import fetch
-from github import Github, GithubException
-from github.AuthenticatedUser import AuthenticatedUser
-from github.ContentFile import ContentFile
-from github.GithubException import UnknownObjectException
-from github.Organization import Organization
-from github.Repository import Repository
+from github3 import GitHub, orgs, repos, users  # type: ignore
+from github3.exceptions import NotFoundError  # type: ignore
+from github3.repos import contents  # type: ignore
+from github3.repos.branch import Branch  # type: ignore
 from nacl import encoding, public  # type: ignore
 from repo_helper.core import RepoHelper
 from repo_helper.files.ci_cd import ActionsManager, platform_ci_names
 from repo_helper.utils import set_gh_actions_versions
 from southwark.repo import Repo
-from typing_extensions import NoReturn
 
 # this package
+from repo_helper_github._github import Github, get_user, protect
 from repo_helper_github._types import _EditKwargs, _ExcData
 from repo_helper_github.cli import github_command
 from repo_helper_github.options import token_option, version_callback
@@ -79,7 +77,7 @@ __all__ = [
 
 
 @contextmanager
-def echo_rate_limit(github: Github, verbose: bool = True):
+def echo_rate_limit(github: GitHub, verbose: bool = True):
 	"""
 	Contextmanager to echo the GitHub API rate limit before and after making a series of requests.
 
@@ -87,11 +85,12 @@ def echo_rate_limit(github: Github, verbose: bool = True):
 	:param verbose: If :py:obj:`False` no output will be printed.
 	"""
 
-	rate = github.get_rate_limit()
-	remaining_requests = rate.core.remaining
+	rate = github.rate_limit()["rate"]
+	remaining_requests = rate["remaining"]
+	reset = datetime.datetime.fromtimestamp(rate["reset"])
 
 	if not remaining_requests:
-		raise abort(f"No requests available! Resets at {rate.core.reset}")
+		raise abort(f"No requests available! Resets at {reset}")
 
 	if verbose:
 		click.echo(f"{remaining_requests} requests available.")
@@ -99,13 +98,16 @@ def echo_rate_limit(github: Github, verbose: bool = True):
 	yield github
 
 	if verbose:
-		rate = github.get_rate_limit()
-		used_requests = remaining_requests - rate.core.remaining
-		click.echo(f"Used {used_requests} requests. {rate.core.remaining} remaining. Resets at {rate.core.reset}")
+		rate = github.rate_limit()["rate"]
+		new_remaining_requests = rate["remaining"]
+		used_requests = remaining_requests - new_remaining_requests
+		reset = datetime.datetime.fromtimestamp(rate["reset"])
+
+		click.echo(f"Used {used_requests} requests. {new_remaining_requests} remaining. Resets at {reset}")
 
 
 def _lower(string: str) -> str:
-	return string.lower()
+	return string.lower().replace('_', '-')
 
 
 class GitHubManager(RepoHelper):
@@ -125,7 +127,7 @@ class GitHubManager(RepoHelper):
 	"""  # noqa: D400
 
 	#:
-	github: Github
+	github: GitHub
 
 	verbose: bool
 	"""
@@ -152,7 +154,7 @@ class GitHubManager(RepoHelper):
 			):
 		super().__init__(target_repo, managed_message)
 
-		self.github = Github(token)
+		self.github = Github(token=token)
 		self.verbose = verbose
 		self.colour = resolve_color_default(colour)
 
@@ -179,11 +181,18 @@ class GitHubManager(RepoHelper):
 
 		with self.echo_rate_limit():
 			user = self.get_org_or_user(org)
+			repo_name = self.templates.globals["repo_name"]
 
-			try:
-				repo = user.create_repo(self.templates.globals["repo_name"], **self.get_repo_kwargs())
-			except GithubException as e:
-				self.handle_exception(e)
+			kwargs = self.get_repo_kwargs()
+			repo: Optional[repos.Repository]
+
+			if org:
+				repo = user.create_repository(repo_name, **kwargs)
+			else:
+				repo = self.github.create_repository(repo_name, **kwargs)
+
+			if repo is None:
+				raise abort(f"No such repository {repo_name} for {'org' if org else 'user'} {user.login}.")
 
 			self.update_topics(repo)
 			click.echo(f"Success! View the repository online at {repo.html_url}")
@@ -219,19 +228,25 @@ class GitHubManager(RepoHelper):
 		with self.echo_rate_limit():
 
 			user = self.get_org_or_user(org)
+			repo_name = self.templates.globals["repo_name"]
 
-			try:
-				repo = user.get_repo(self.templates.globals["repo_name"])
-			except GithubException as e:
-				self.handle_exception(e)
+			repo: Optional[repos.Repository] = self.github.repository(user.login, repo_name)
 
-			repo.edit(**self.get_repo_kwargs())
+			if repo is None:
+				raise abort(f"No such repository {repo_name} for {'org' if org else 'user'} {user.login}.")
+
+			repo.edit(
+					name=repo.name,
+					**self.get_repo_kwargs(),
+					allow_merge_commit=False,
+					)
+
 			self.update_topics(repo)
 			click.echo("Up to date!")
 
 		return 0
 
-	def get_org_or_user(self, org: bool = False) -> Union[Organization, AuthenticatedUser]:
+	def get_org_or_user(self, org: bool = False) -> Union[orgs.Organization, users.User]:
 		"""
 		If ``org`` is :py:obj:`True`, returns the :class:`~.Organization` object representing the
 		GitHub org that owns the repository.
@@ -244,11 +259,11 @@ class GitHubManager(RepoHelper):
 		.. versionadded:: 0.4.1
 		"""  # noqa: D400
 
-		user = self.github.get_user()
+		user = get_user(self.github)
 
 		if org:
 			self.assert_org_member(user)
-			return self.github.get_organization(self.templates.globals["username"])
+			return self.github.organization(self.templates.globals["username"])
 		else:
 			self.assert_matching_usernames(user)
 			return user
@@ -277,24 +292,20 @@ class GitHubManager(RepoHelper):
 
 		with self.echo_rate_limit():
 			user = self.get_org_or_user(org)
+			repo_name = self.templates.globals["repo_name"]
 
-			try:
-				repo: Repository = user.get_repo(self.templates.globals["repo_name"])
-			except GithubException as e:
-				self.handle_exception(e)
+			repo: Optional[repos.Repository] = self.github.repository(user.login, repo_name)
 
-			repos_url = RequestsURL("https://api.github.com/repos")
-			secrets_url = repos_url / repo.owner.login / repo.name / "actions/secrets"
-			secrets_url.session.headers = {
-					"Authorization": repo._requester._Requester__authorizationHeader,  # type: ignore
-					"user-agent": "repo_helper_github",
-					}
+			if repo is None:
+				raise abort(f"No such repository {repo_name} for {'org' if org else 'user'} {user.login}.")
 
 			# List of existing secrets.
-			existing_secrets = [secret["name"] for secret in secrets_url.get().json()["secrets"]]
+			secrets_url = URL(repo._build_url("actions/secrets", base_url=repo._api))
+			raw_secrets = repo._json(repo._get(str(secrets_url), headers=repo.PREVIEW_HEADERS), 200)
+			existing_secrets = [secret["name"] for secret in raw_secrets["secrets"]]
 
 			# Public key to encrypt secrets with.
-			public_key = (secrets_url / "public-key").get().json()
+			public_key = repo._json(repo._get(str(secrets_url / "public-key"), headers=repo.PREVIEW_HEADERS), 200)
 
 			ret = 0
 			target_secrets = {"PYPI_TOKEN"}
@@ -321,7 +332,9 @@ class GitHubManager(RepoHelper):
 
 					key_id = public_key["key_id"]
 					secret_json = {"encrypted_value": encrypted_value, "key_id": key_id}
-					response = (secrets_url / secret_name).put(json=secret_json)
+					response = repo._put(
+							str(secrets_url / secret_name), headers=repo.PREVIEW_HEADERS, json=secret_json
+							)
 
 					if response.status_code not in {200, 201, 204}:
 						message = f"Could not {operation} the secret {secret_name!r}: Status {response.status_code}"
@@ -348,29 +361,22 @@ class GitHubManager(RepoHelper):
 
 		with self.echo_rate_limit():
 			user = self.get_org_or_user(org)
+			repo_name = self.templates.globals["repo_name"]
 
-			try:
-				repo: Repository = user.get_repo(self.templates.globals["repo_name"])
-			except GithubException as e:
-				self.handle_exception(e)
+			repo: Optional[repos.Repository] = self.github.repository(user.login, repo_name)
 
-			gh_branch = repo.get_branch(branch)
+			if repo is None:
+				raise abort(f"No such repository {repo_name} for {'org' if org else 'user'} {user.login}.")
+
+			gh_branch: Optional[Branch] = repo.branch(branch)
 			required_checks = list(compile_required_checks(self))
 
-			# gh_branch.edit_required_status_checks(strict=False, contexts=)
-			gh_branch.edit_protection(
-					strict=False,
-					contexts=required_checks,
-					dismiss_stale_reviews=False,
-					required_approving_review_count=1,
-					)
-
-			gh_branch.edit_protection(strict=False, contexts=required_checks)
+			protect(gh_branch, status_checks=required_checks)
 
 		click.echo("Up to date!")
 		return 0
 
-	def assert_matching_usernames(self, user: AuthenticatedUser):
+	def assert_matching_usernames(self, user: users.User):
 		"""
 		Assert that the username configured in ``repo_helper.yml`` matches that of the authenticated user.
 
@@ -384,22 +390,27 @@ class GitHubManager(RepoHelper):
 					f"If {self.templates.globals['username']} is an organisation you should use the --org flag."
 					)
 
-	def assert_org_member(self, user: AuthenticatedUser):
+	def assert_org_member(self, user: users.User):
 		"""
 		Assert that the organisation configured in ``repo_helper.yml`` exists, and the authenticated user is a member.
 
 		:param user:
 		"""
 
-		try:
-			user.get_organization_membership(self.templates.globals["username"])
-		except UnknownObjectException:
-			raise abort(
-					f"Either organisation configured in 'repo_helper.yml' ({self.templates.globals['username']}) "
-					f"does not exist or the authenticated user ({user.login}) is not a member!"
-					)
+		error = abort(
+				f"Either the organisation configured in 'repo_helper.yml' ({self.templates.globals['username']}) "
+				f"does not exist or the authenticated user ({user.login}) is not a member!"
+				)
 
-	def update_topics(self, repo: Repository):
+		try:
+			org = self.github.organization(self.templates.globals["username"])
+		except NotFoundError:
+			raise error
+
+		if not org.is_member(user.login):
+			raise error
+
+	def update_topics(self, repo: repos.Repository):
 		"""
 		Update the repository's topics.
 
@@ -407,29 +418,15 @@ class GitHubManager(RepoHelper):
 		"""
 		# TODO: other languages detected in repo
 
-		topics = set(repo.get_topics())
+		raw_topics = repo.topics()
+		if raw_topics is None:
+			topics = set()
+		else:
+			topics = set(raw_topics.names)
+
 		topics.add("python")
 		topics.update(self.templates.globals["keywords"])
 		repo.replace_topics(sorted(map(_lower, topics)))
-
-	@staticmethod
-	def handle_exception(exc: GithubException) -> NoReturn:
-		"""
-		Handle an exception raised by the GitHub REST API.
-
-		:param exc:
-
-		:raises: :class:`click.Abort`
-		"""
-
-		data: _ExcData = exc.data  # type: ignore
-
-		if "errors" in data:
-			errors = DelimitedList(i["message"] for i in data["errors"])
-		else:
-			errors = DelimitedList([data["message"]])
-
-		raise abort(f"{exc.data['message']}\n{errors:\t\n}")
 
 	def get_repo_kwargs(self) -> _EditKwargs:
 		"""
@@ -440,7 +437,6 @@ class GitHubManager(RepoHelper):
 
 		edit_kwargs: _EditKwargs = {
 				"description": self.templates.globals["short_desc"],
-				"allow_merge_commit": False,
 				}
 
 		if self.templates.globals["enable_docs"]:
@@ -543,9 +539,9 @@ class IsolatedGitHubManager(GitHubManager):
 		target_repo = PathPlus(self._tmpdir.name)
 		config_file_name = "repo_helper.yml"
 
-		github_repo = self.github.get_repo(f"{username}/{repo_name}")
-		contents_from_github: ContentFile = github_repo.get_contents(config_file_name)  # type: ignore
-		(target_repo / config_file_name).write_bytes(contents_from_github.decoded_content)
+		github_repo: repos.Repository = self.github.repository(username, repo_name)
+		contents_from_github: contents.Contents = github_repo.file_contents(config_file_name)
+		(target_repo / config_file_name).write_bytes(contents_from_github.decoded)
 
 		RepoHelper.__init__(self, target_repo, managed_message)
 

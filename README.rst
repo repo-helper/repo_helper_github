@@ -18,7 +18,7 @@ repo_helper_github
 	* - Docs
 	  - |docs| |docs_check|
 	* - Tests
-	  - |actions_linux| |actions_windows| |actions_macos|
+	  - |actions_linux| |actions_windows| |actions_macos| |coveralls|
 	* - PyPI
 	  - |pypi-version| |supported-versions| |supported-implementations| |wheel|
 	* - Activity
@@ -59,6 +59,10 @@ repo_helper_github
 .. |requires| image:: https://requires.io/github/repo-helper/repo_helper_github/requirements.svg?branch=master
 	:target: https://requires.io/github/repo-helper/repo_helper_github/requirements/?branch=master
 	:alt: Requirements Status
+
+.. |coveralls| image:: https://img.shields.io/coveralls/github/repo-helper/repo_helper_github/master?logo=coveralls
+	:target: https://coveralls.io/github/repo-helper/repo_helper_github?branch=master
+	:alt: Coverage
 
 .. |codefactor| image:: https://img.shields.io/codefactor/grade/github/repo-helper/repo_helper_github?logo=codefactor
 	:target: https://www.codefactor.io/repository/github/repo-helper/repo_helper_github
