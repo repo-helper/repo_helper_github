@@ -27,19 +27,16 @@ Manage GitHub repositories with ``repo-helper``.
 #
 
 # stdlib
-import datetime
 import tempfile
-from base64 import b64encode
-from contextlib import contextmanager
 from getpass import getpass
 from typing import Iterator, Optional, Union
 
 # 3rd party
 import click
-from apeye import URL
 from consolekit.input import confirm
 from consolekit.terminal_colours import Fore, resolve_color_default
 from consolekit.utils import abort
+from deprecation_alias import deprecated
 from domdf_python_tools.paths import PathPlus
 from domdf_python_tools.typing import PathLike
 from dulwich.errors import NotGitRepository
@@ -48,14 +45,15 @@ from github3 import GitHub, orgs, repos, users  # type: ignore
 from github3.exceptions import NotFoundError  # type: ignore
 from github3.repos import contents  # type: ignore
 from github3.repos.branch import Branch  # type: ignore
-from nacl import encoding, public  # type: ignore
+from github3_utils import echo_rate_limit as _utils_echo_rate_limit
+from github3_utils import get_user, protect_branch, secrets
 from repo_helper.core import RepoHelper
 from repo_helper.files.ci_cd import ActionsManager, platform_ci_names
 from repo_helper.utils import set_gh_actions_versions
 from southwark.repo import Repo
 
 # this package
-from repo_helper_github._github import Github, get_user, protect
+from repo_helper_github._github import Github
 from repo_helper_github._types import _EditKwargs, _ExcData
 from repo_helper_github.cli import github_command
 from repo_helper_github.options import token_option, version_callback
@@ -75,35 +73,14 @@ __all__ = [
 		"compile_required_checks",
 		]
 
-
-@contextmanager
-def echo_rate_limit(github: GitHub, verbose: bool = True):
-	"""
-	Contextmanager to echo the GitHub API rate limit before and after making a series of requests.
-
-	:param github:
-	:param verbose: If :py:obj:`False` no output will be printed.
-	"""
-
-	rate = github.rate_limit()["rate"]
-	remaining_requests = rate["remaining"]
-	reset = datetime.datetime.fromtimestamp(rate["reset"])
-
-	if not remaining_requests:
-		raise abort(f"No requests available! Resets at {reset}")
-
-	if verbose:
-		click.echo(f"{remaining_requests} requests available.")
-
-	yield github
-
-	if verbose:
-		rate = github.rate_limit()["rate"]
-		new_remaining_requests = rate["remaining"]
-		used_requests = remaining_requests - new_remaining_requests
-		reset = datetime.datetime.fromtimestamp(rate["reset"])
-
-		click.echo(f"Used {used_requests} requests. {new_remaining_requests} remaining. Resets at {reset}")
+echo_rate_limit = deprecated(
+		deprecated_in="0.5.0",
+		removed_in="1.0.0",
+		current_version=__version__,
+		details="Use the new 'github3-utils' package instead."
+		)(
+				_utils_echo_rate_limit
+				)
 
 
 def _lower(string: str) -> str:
@@ -235,6 +212,8 @@ class GitHubManager(RepoHelper):
 			if repo is None:
 				raise abort(f"No such repository {repo_name} for {'org' if org else 'user'} {user.login}.")
 
+			# TODO: add config option for allow_merge_commit
+
 			repo.edit(
 					name=repo.name,
 					**self.get_repo_kwargs(),
@@ -300,12 +279,10 @@ class GitHubManager(RepoHelper):
 				raise abort(f"No such repository {repo_name} for {'org' if org else 'user'} {user.login}.")
 
 			# List of existing secrets.
-			secrets_url = URL(repo._build_url("actions/secrets", base_url=repo._api))
-			raw_secrets = repo._json(repo._get(str(secrets_url), headers=repo.PREVIEW_HEADERS), 200)
-			existing_secrets = [secret["name"] for secret in raw_secrets["secrets"]]
+			existing_secrets = secrets.get_secrets(repo)
 
 			# Public key to encrypt secrets with.
-			public_key = repo._json(repo._get(str(secrets_url / "public-key"), headers=repo.PREVIEW_HEADERS), 200)
+			public_key = secrets.get_public_key(repo)
 
 			ret = 0
 			target_secrets = {"PYPI_TOKEN"}
@@ -325,15 +302,11 @@ class GitHubManager(RepoHelper):
 				if update:
 					operation = "update" if secret_name in existing_secrets else "create"
 
-					encrypted_value = encrypt_secret(
-							public_key["key"],
-							secret_value=locals().get(secret_name, None) or getpass(f"{secret_name}: "),
-							)
-
-					key_id = public_key["key_id"]
-					secret_json = {"encrypted_value": encrypted_value, "key_id": key_id}
-					response = repo._put(
-							str(secrets_url / secret_name), headers=repo.PREVIEW_HEADERS, json=secret_json
+					response = secrets.set_secret(
+							repo,
+							secret_name=secret_name,
+							value=locals().get(secret_name, None) or getpass(f"{secret_name}: "),
+							public_key=public_key,
 							)
 
 					if response.status_code not in {200, 201, 204}:
@@ -371,7 +344,7 @@ class GitHubManager(RepoHelper):
 			gh_branch: Optional[Branch] = repo.branch(branch)
 			required_checks = list(compile_required_checks(self))
 
-			protect(gh_branch, status_checks=required_checks)
+			protect_branch(gh_branch, status_checks=required_checks)
 
 		click.echo("Up to date!")
 		return 0
@@ -433,8 +406,6 @@ class GitHubManager(RepoHelper):
 		Returns the keyword arguments used when creating and updating repositories.
 		"""
 
-		# TODO: add config option for allow_merge_commit
-
 		edit_kwargs: _EditKwargs = {
 				"description": self.templates.globals["short_desc"],
 				}
@@ -445,20 +416,14 @@ class GitHubManager(RepoHelper):
 		return edit_kwargs
 
 
-def encrypt_secret(public_key: str, secret_value: str) -> str:
-	"""
-	Encrypt a GitHub Actions secret.
-
-	:param public_key:
-	:param secret_value:
-
-	.. versionadded: 0.4.1
-	"""
-
-	public_key = public.PublicKey(public_key.encode("utf-8"), encoding.Base64Encoder())
-	sealed_box = public.SealedBox(public_key)
-	encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
-	return b64encode(encrypted).decode("utf-8")
+encrypt_secret = deprecated(
+		deprecated_in="0.5.0",
+		removed_in="1.0.0",
+		current_version=__version__,
+		details="Use the new 'github3-utils' package instead."
+		)(
+				secrets.encrypt_secret
+				)
 
 
 def compile_required_checks(repo: RepoHelper) -> Iterator[str]:

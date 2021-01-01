@@ -1,32 +1,29 @@
 # 3rd party
 from apeye import URL
-from betamax import Betamax  # type: ignore
 from github3.repos import Repository  # type: ignore
 
 
-def test_secrets(github_manager, example_config):
-	with Betamax(github_manager.github.session) as vcr:
-		vcr.use_cassette("secrets", record="once")
-		vcr.config.match_options = ["method", "uri", "headers"]
+def test_secrets(github_manager, example_config, module_cassette):
+	# vcr.config.match_options = ["method", "uri", "headers"]
 
-		repo: Repository = github_manager.github.repository("domdfcoding", "repo_helper_demo")
+	repo: Repository = github_manager.github.repository("domdfcoding", "repo_helper_demo")
 
-		# List of existing secrets.
-		secrets_url = URL(repo._build_url("actions/secrets", base_url=repo._api))
-		raw_secrets = repo._json(repo._get(str(secrets_url), headers=repo.PREVIEW_HEADERS), 200)
-		existing_secrets = [secret["name"] for secret in raw_secrets["secrets"]]
+	# List of existing secrets.
+	secrets_url = URL(repo._build_url("actions/secrets", base_url=repo._api))
+	raw_secrets = repo._json(repo._get(str(secrets_url), headers=repo.PREVIEW_HEADERS), 200)
+	existing_secrets = [secret["name"] for secret in raw_secrets["secrets"]]
 
-		assert "PYPI_TOKEN" not in existing_secrets
-		assert "ANACONDA_TOKEN" not in existing_secrets
+	assert "PYPI_TOKEN" not in existing_secrets
+	assert "ANACONDA_TOKEN" not in existing_secrets
 
-		github_manager.secrets(PYPI_TOKEN="abcdefg", ANACONDA_TOKEN="hijklmnop", overwrite=False)
+	github_manager.secrets(PYPI_TOKEN="abcdefg", ANACONDA_TOKEN="hijklmnop", overwrite=False)
 
-		# List of existing secrets.
-		raw_secrets = repo._json(repo._get(str(secrets_url), headers=repo.PREVIEW_HEADERS), 200)
-		existing_secrets = [secret["name"] for secret in raw_secrets["secrets"]]
+	# List of existing secrets.
+	raw_secrets = repo._json(repo._get(str(secrets_url), headers=repo.PREVIEW_HEADERS), 200)
+	existing_secrets = [secret["name"] for secret in raw_secrets["secrets"]]
 
-		assert "PYPI_TOKEN" in existing_secrets
-		assert "ANACONDA_TOKEN" in existing_secrets
+	assert "PYPI_TOKEN" in existing_secrets
+	assert "ANACONDA_TOKEN" in existing_secrets
 
 
 #
@@ -51,7 +48,7 @@ def test_secrets(github_manager, example_config):
 # 			])
 #
 # 	with Betamax(session) as vcr:
-# 		vcr.use_cassette("secrets", record="once")
+# 		vcr.use_cassette("test_secrets", record="once")
 #
 # 		manager = GitHubManager(
 # 				"FAKE_TOKEN",

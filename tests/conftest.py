@@ -1,5 +1,6 @@
 # 3rd party
 import pytest
+from _pytest.fixtures import FixtureRequest
 from betamax import Betamax  # type: ignore
 from domdf_python_tools.paths import PathPlus
 from github3.session import GitHubSession  # type: ignore
@@ -51,3 +52,25 @@ def betamax_github_session(monkeypatch):
 	monkeypatch.setattr(Github, "__init__", __init__)
 
 	return session
+
+
+@pytest.fixture()
+def cassette(request: FixtureRequest, github_manager):
+	cassette_name = request.node.name
+
+	with Betamax(github_manager.github.session) as vcr:
+		vcr.use_cassette(cassette_name, record="none")
+		# print(f"Using cassette {cassette_name!r}")
+
+		yield github_manager
+
+
+@pytest.fixture()
+def module_cassette(request: FixtureRequest, github_manager):
+	cassette_name = request.module.__name__
+
+	with Betamax(github_manager.github.session) as vcr:
+		vcr.use_cassette(cassette_name, record="none")
+		# print(f"Using cassette {cassette_name!r}")
+
+		yield github_manager

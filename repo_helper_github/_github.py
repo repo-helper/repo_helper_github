@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 #
 #  _github.py
-"""
-Helper shims for github3.py
-"""
 #
 #  Copyright © 2020 Dominic Davis-Foster <dominic@davis-foster.co.uk>
 #
@@ -26,61 +23,11 @@ Helper shims for github3.py
 #  OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-# stdlib
-from typing import List, Optional
-
 # 3rd party
-from apeye import URL
-from github3 import GitHub, users  # type: ignore
-from github3.repos.branch import Branch  # type: ignore
+from github3 import GitHub  # type: ignore
 
-__all__ = ["Github", "get_user", "protect"]
+__all__ = ["Github"]
 
 
 class Github(GitHub):
 	pass
-
-
-def get_user(gh: GitHub) -> users.User:
-	"""
-	Retrieve a :class:`github3.users.User` object for the authenticated user.
-	"""
-
-	url = gh._build_url("user")
-	json = gh._json(gh._get(url), 200)
-	return gh._instance_or_null(users.User, json)
-
-
-def protect(branch: Branch, status_checks: Optional[List[str]] = None) -> bool:
-	"""
-	Enable force push protection and configure status check enforcement.
-
-	:param status_checks: A list of strings naming status checks which must pass before merging.
-		Use :py:obj:`None` or omit to use the already associated value.
-	:returns: :py:obj:`True` if successful, :py:obj:`False` otherwise
-	"""
-
-	previous_values = None
-	previous_protection = getattr(branch, "original_protection", {})
-
-	if previous_protection:
-		previous_values = previous_protection.get("required_status_checks", {})
-
-	if status_checks is None and previous_values:
-		status_checks = previous_values["contexts"]
-
-	edit = {
-			"required_status_checks": {"strict": False, "contexts": status_checks},
-			"enforce_admins": None,
-			"required_pull_request_reviews": {
-					"dismiss_stale_reviews": False,
-					"required_approving_review_count": 1,
-					},
-			"restrictions": None,
-			}
-
-	PREVIEW_HEADERS = {"Accept": "application/vnd.github.luke-cage-preview+json"}
-	resp = branch._put(str(URL(branch._api) / "protection"), json=edit, headers=PREVIEW_HEADERS)
-
-	branch._json(resp, 200)
-	return branch._boolean(resp, 200, 404)
