@@ -6,7 +6,8 @@ from domdf_python_tools.paths import PathPlus
 from github3.session import GitHubSession  # type: ignore
 
 # this package
-from repo_helper_github import Github, GitHubManager
+from repo_helper_github import GitHubManager
+from repo_helper_github._github import Github
 
 with Betamax.configure() as config:
 	config.cassette_library_dir = PathPlus(__file__).parent / "cassettes"

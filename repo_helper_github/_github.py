@@ -29,5 +29,5 @@ from github3 import GitHub  # type: ignore
 __all__ = ["Github"]
 
 
-class Github(GitHub):
+class Github(GitHub):  # noqa: D101
 	pass
