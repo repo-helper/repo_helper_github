@@ -12,7 +12,7 @@ from repo_helper_github._github import Github
 with Betamax.configure() as config:
 	config.cassette_library_dir = PathPlus(__file__).parent / "cassettes"
 
-pytest_plugins = ("domdf_python_tools.testing", "repo_helper.testing")
+pytest_plugins = ("domdf_python_tools.testing", "github3_utils.testing", "repo_helper.testing")
 
 
 @pytest.fixture()
@@ -56,22 +56,5 @@ def betamax_github_session(monkeypatch):
 
 
 @pytest.fixture()
-def cassette(request: FixtureRequest, github_manager):
-	cassette_name = request.node.name
-
-	with Betamax(github_manager.github.session) as vcr:
-		vcr.use_cassette(cassette_name, record="none")
-		# print(f"Using cassette {cassette_name!r}")
-
-		yield github_manager
-
-
-@pytest.fixture()
-def module_cassette(request: FixtureRequest, github_manager):
-	cassette_name = request.module.__name__
-
-	with Betamax(github_manager.github.session) as vcr:
-		vcr.use_cassette(cassette_name, record="none")
-		# print(f"Using cassette {cassette_name!r}")
-
-		yield github_manager
+def github_client(github_manager):
+	return github_manager.github

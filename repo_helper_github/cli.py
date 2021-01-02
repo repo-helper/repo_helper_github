@@ -35,10 +35,11 @@ from typing import Optional
 import click
 from consolekit import CONTEXT_SETTINGS
 from consolekit.options import colour_option, verbose_option, version_option
+from github3_utils.click import token_option
 from repo_helper.cli import cli_group
 
 # this package
-from repo_helper_github.options import org_option, token_option, version_callback
+from repo_helper_github.options import org_option, version_callback
 
 __all__ = [
 		"github",

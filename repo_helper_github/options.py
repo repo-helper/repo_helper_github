@@ -33,27 +33,7 @@ from typing import Callable
 import click
 from domdf_python_tools.stringlist import DelimitedList
 
-__all__ = ["token_option", "version_callback", "org_option"]
-
-
-def token_option(token_var: str = "GITHUB_TOKEN") -> Callable:  # nosec: B107
-	"""
-	Creates a ``-t / --token`` option for the GitHub API token.
-
-	:param token_var:
-	"""
-
-	return click.option(
-			"-t",
-			"--token",
-			type=click.STRING,
-			help=(
-					"The token to authenticate with the GitHub API. "
-					f"Can also be provided via the '{token_var}' environment variable."
-					),
-			envvar=token_var,
-			required=True,
-			)
+__all__ = ["version_callback", "org_option"]
 
 
 def org_option() -> Callable:

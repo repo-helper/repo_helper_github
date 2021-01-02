@@ -54,9 +54,8 @@ from southwark.repo import Repo
 
 # this package
 from repo_helper_github._github import Github
-from repo_helper_github._types import _EditKwargs, _ExcData
+from repo_helper_github._types import _EditKwargs
 from repo_helper_github.cli import github_command
-from repo_helper_github.options import token_option, version_callback
 
 __author__: str = "Dominic Davis-Foster"
 __copyright__: str = "2020-2021 Dominic Davis-Foster"

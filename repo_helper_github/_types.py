@@ -35,14 +35,9 @@ class _EditKwargs(TypedDict, total=False):
 	homepage: str
 	private: bool
 	has_issues: bool
-	has_projects: bool
+	# has_projects: bool
 	has_wiki: bool
-	has_downloads: bool
-	allow_squash_merge: bool
-	allow_merge_commit: bool
-	allow_rebase_merge: bool
-
-
-class _ExcData(TypedDict):
-	message: str
-	errors: List[Dict[str, str]]
+	# has_downloads: bool
+	# allow_squash_merge: bool
+	# allow_merge_commit: bool
+	# allow_rebase_merge: bool
