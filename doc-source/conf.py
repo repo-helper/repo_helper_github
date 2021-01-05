@@ -63,7 +63,7 @@ pygments_style = "default"
 intersphinx_mapping = {
 		"python": ("https://docs.python.org/3/", None),
 		"sphinx": ("https://www.sphinx-doc.org/en/stable/", None),
-		"pygithub": ("https://pygithub.readthedocs.io/en/latest", None),
+		"github3": ("https://github3py.readthedocs.io/en/master/", None),
 		"click": ("https://click.palletsprojects.com/en/7.x/", None),
 		}
 
