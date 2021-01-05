@@ -369,18 +369,19 @@ class GitHubManager(RepoHelper):
 		:param user:
 		"""
 
-		error = abort(
-				f"Either the organisation configured in 'repo_helper.yml' ({self.templates.globals['username']}) "
-				f"does not exist or the authenticated user ({user.login}) is not a member!"
-				)
+		def error():
+			raise abort(
+					f"Either the organisation configured in 'repo_helper.yml' ({self.templates.globals['username']}) "
+					f"does not exist or the authenticated user ({user.login}) is not a member!"
+					)
 
 		try:
 			org = self.github.organization(self.templates.globals["username"])
 		except NotFoundError:
-			raise error
+			raise error()
 
 		if not org.is_member(user.login):
-			raise error
+			raise error()
 
 	def update_topics(self, repo: repos.Repository):
 		"""
