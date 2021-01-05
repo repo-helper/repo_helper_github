@@ -31,7 +31,7 @@ extra_sphinx_extensions:
  - sphinx_click
 
 intersphinx_mapping:
- - "'pygithub': ('https://pygithub.readthedocs.io/en/latest', None)"
+ - '"github3": ("https://github3py.readthedocs.io/en/master/", None)'
  - "'click': ('https://click.palletsprojects.com/en/7.x/', None)"
 
 sphinx_html_theme: furo
