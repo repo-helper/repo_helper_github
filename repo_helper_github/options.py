@@ -31,6 +31,7 @@ from typing import Callable
 
 # 3rd party
 import click
+from click import Context, Option
 from domdf_python_tools.stringlist import DelimitedList
 
 __all__ = ["version_callback", "org_option"]
@@ -54,7 +55,7 @@ def org_option() -> Callable:
 			)
 
 
-def version_callback(ctx, param, value):  # noqa: D103
+def version_callback(ctx: Context, param: Option, value: int):  # noqa: D103
 	# 3rd party
 	import repo_helper
 
