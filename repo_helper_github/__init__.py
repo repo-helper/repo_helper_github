@@ -47,6 +47,7 @@ from github3.repos import contents  # type: ignore
 from github3.repos.branch import Branch  # type: ignore
 from github3_utils import echo_rate_limit as _utils_echo_rate_limit
 from github3_utils import get_user, protect_branch, secrets
+from github3_utils.check_labels import check_status_labels
 from repo_helper.core import RepoHelper
 from repo_helper.files.ci_cd import ActionsManager, platform_ci_names
 from repo_helper.utils import set_gh_actions_versions
@@ -414,6 +415,37 @@ class GitHubManager(RepoHelper):
 			edit_kwargs["homepage"] = self.templates.globals["docs_url"]
 
 		return edit_kwargs
+
+	def create_labels(self, org: bool = False) -> int:
+		"""
+		Create labels for this repository.
+
+		:param org: Whether the repository should be created for the organisation set as ``username``,
+			or for the authenticated user (default).
+
+		.. versionadded:: 0.5.0
+		"""
+
+		with self.echo_rate_limit():
+			user = self.get_org_or_user(org)
+			repo_name = self.templates.globals["repo_name"]
+			repo: Optional[repos.Repository] = self.github.repository(user.login, repo_name)
+
+			if repo is None:
+				raise abort(f"No such repository {repo_name} for {'org' if org else 'user'} {user.login}.")
+
+			current_labels = {label.name: label for label in repo.labels()}
+
+			for label in check_status_labels.values():
+				if label.name in current_labels:
+					current_labels[label.name].update(**label.to_dict())
+				else:
+					label.create(repo)
+					click.echo(f"Created label {label.name}")
+
+		click.echo("Up to date!")
+
+		return 0
 
 
 encrypt_secret = deprecated(

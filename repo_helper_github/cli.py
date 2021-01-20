@@ -29,12 +29,13 @@ Manage GitHub repositories with ``repo-helper``.
 # stdlib
 import sys
 from functools import partial
-from typing import Optional
 
 # 3rd party
 import click
+from click import Command
 from consolekit import CONTEXT_SETTINGS
 from consolekit.options import colour_option, verbose_option, version_option
+from consolekit.terminal_colours import ColourTrilean
 from github3_utils.click import token_option
 from repo_helper.cli import cli_group
 
@@ -47,6 +48,7 @@ __all__ = [
 		"update",
 		"github_command",
 		"protect_branch",
+		"labels",
 		]
 
 
@@ -61,12 +63,21 @@ def github():
 github_command = partial(github.command, context_settings=CONTEXT_SETTINGS)
 
 
-@colour_option()
-@verbose_option(help_text="Show information on the GitHub API rate limit.")
-@token_option()
-@org_option()
+def options(command: Command) -> Command:
+	for deco in [
+			colour_option(),
+			verbose_option(help_text="Show information on the GitHub API rate limit."),
+			token_option(),
+			org_option(),
+			]:
+		command = deco(command)
+
+	return command
+
+
+@options
 @github_command()
-def new(token: str, verbose: bool = False, colour: Optional[bool] = None, org: bool = False):
+def new(token: str, verbose: bool = False, colour: ColourTrilean = None, org: bool = False):
 	"""
 	Create a new GitHub repository for this project.
 	"""
@@ -80,12 +91,9 @@ def new(token: str, verbose: bool = False, colour: Optional[bool] = None, org: b
 	sys.exit(GitHubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).new(org=org))
 
 
-@colour_option()
-@verbose_option(help_text="Show information on the GitHub API rate limit.")
-@token_option()
-@org_option()
+@options
 @github_command()
-def update(token: str, verbose: bool = False, colour: Optional[bool] = None, org: bool = False):
+def update(token: str, verbose: bool = False, colour: ColourTrilean = None, org: bool = False):
 	"""
 	Update the GitHub repository for this project.
 	"""
@@ -99,12 +107,9 @@ def update(token: str, verbose: bool = False, colour: Optional[bool] = None, org
 	sys.exit(GitHubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).update(org=org))
 
 
-@colour_option()
-@verbose_option(help_text="Show information on the GitHub API rate limit.")
-@token_option()
-@org_option()
+@options
 @github_command()
-def secrets(token: str, verbose: bool = False, colour: Optional[bool] = None, org: bool = False):
+def secrets(token: str, verbose: bool = False, colour: ColourTrilean = None, org: bool = False):
 	"""
 	Set or update the secrets of the GitHub repository for this project.
 	"""
@@ -119,16 +124,13 @@ def secrets(token: str, verbose: bool = False, colour: Optional[bool] = None, or
 
 
 @click.argument("branch", type=click.STRING)
-@colour_option()
-@verbose_option(help_text="Show information on the GitHub API rate limit.")
-@token_option()
-@org_option()
+@options
 @github_command()
 def protect_branch(
 		branch: str,
 		token: str,
 		verbose: bool = False,
-		colour: Optional[bool] = None,
+		colour: ColourTrilean = None,
 		org: bool = False,
 		):
 	"""
@@ -142,3 +144,19 @@ def protect_branch(
 	from repo_helper_github import GitHubManager
 
 	sys.exit(GitHubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).protect_branch(branch, org=org))
+
+
+@options
+@github_command()
+def labels(token: str, verbose: bool = False, colour: ColourTrilean = None, org: bool = False):
+	"""
+	Create labels for this repository.
+	"""
+
+	# 3rd party
+	from domdf_python_tools.paths import PathPlus
+
+	# this package
+	from repo_helper_github import GitHubManager
+
+	sys.exit(GitHubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).create_labels(org=org))
