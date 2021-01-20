@@ -459,7 +459,7 @@ def compile_required_checks(repo: RepoHelper) -> Iterator[str]:
 
 			yield f"{ci_platform} / Python {version}"
 
-	yield from ["mypy / ubuntu-latest", "Flake8"]
+	yield from [f"mypy / {platform_ci_names['Linux']}", "Flake8"]
 
 	if repo.templates.globals["enable_docs"]:
 		yield "docs"
@@ -497,7 +497,7 @@ class IsolatedGitHubManager(GitHubManager):
 
 		self._tmpdir = tempfile.TemporaryDirectory()
 
-		self.github = Github(token)
+		self.github = Github(token=token)
 		self.verbose = verbose
 		self.colour = resolve_color_default(colour)
 
