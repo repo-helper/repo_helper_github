@@ -1,6 +1,5 @@
 # 3rd party
 import pytest
-from _pytest.fixtures import FixtureRequest
 from betamax import Betamax  # type: ignore
 from domdf_python_tools.paths import PathPlus
 from github3.session import GitHubSession  # type: ignore

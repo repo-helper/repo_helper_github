@@ -34,7 +34,7 @@ from typing import Iterator, Optional, Union
 # 3rd party
 import click
 from consolekit.input import confirm
-from consolekit.terminal_colours import Fore, resolve_color_default
+from consolekit.terminal_colours import ColourTrilean, Fore, resolve_color_default
 from consolekit.utils import abort
 from deprecation_alias import deprecated
 from domdf_python_tools.paths import PathPlus
@@ -98,9 +98,7 @@ class GitHubManager(RepoHelper):
 	:param verbose: Whether to show information on the GitHub API rate limit.
 	:param colour: Whether to use coloured output.
 
-	.. versionchanged:: 0.4.1
-
-		Added the ``verbose`` and ``colour`` options.
+	.. versionchanged:: 0.4.1  Added the ``verbose`` and ``colour`` options.
 	"""  # noqa: D400
 
 	#:
@@ -113,7 +111,7 @@ class GitHubManager(RepoHelper):
 	.. versionadded: 0.4.1
 	"""
 
-	colour: Optional[bool]
+	colour: ColourTrilean
 	"""
 	Whether to use coloured output.
 
@@ -127,7 +125,7 @@ class GitHubManager(RepoHelper):
 			managed_message="This file is managed by 'repo_helper'. Don't edit it directly.",
 			*,
 			verbose: bool = False,
-			colour: Optional[bool] = True,
+			colour: ColourTrilean = True,
 			):
 		super().__init__(target_repo, managed_message)
 
@@ -160,13 +158,12 @@ class GitHubManager(RepoHelper):
 			user = self.get_org_or_user(org)
 			repo_name = self.templates.globals["repo_name"]
 
-			kwargs = self.get_repo_kwargs()
 			repo: Optional[repos.Repository]
 
 			if org:
-				repo = user.create_repository(repo_name, **kwargs)
+				repo = user.create_repository(repo_name, **self.get_repo_kwargs())
 			else:
-				repo = self.github.create_repository(repo_name, **kwargs)
+				repo = self.github.create_repository(repo_name, **self.get_repo_kwargs())
 
 			if repo is None:
 				raise abort(f"No such repository {repo_name} for {'org' if org else 'user'} {user.login}.")
@@ -203,10 +200,8 @@ class GitHubManager(RepoHelper):
 		"""
 
 		with self.echo_rate_limit():
-
 			user = self.get_org_or_user(org)
 			repo_name = self.templates.globals["repo_name"]
-
 			repo: Optional[repos.Repository] = self.github.repository(user.login, repo_name)
 
 			if repo is None:
@@ -265,7 +260,6 @@ class GitHubManager(RepoHelper):
 		``PYPI_TOKEN`` and ``ANACONDA_TOKEN`` can either be passed as keyword arguments to this function or provided at the interactive prompt.
 
 		.. versionadded:: 0.4.1
-
 		.. versionchanged:: 0.4.1  Add ``overwrite``, ``PYPI_TOKEN``, ``ANACONDA_TOKEN`` options.
 		"""
 
@@ -407,9 +401,7 @@ class GitHubManager(RepoHelper):
 		Returns the keyword arguments used when creating and updating repositories.
 		"""
 
-		edit_kwargs: _EditKwargs = {
-				"description": self.templates.globals["short_desc"],
-				}
+		edit_kwargs: _EditKwargs = {"description": self.templates.globals["short_desc"]}
 
 		if self.templates.globals["enable_docs"]:
 			edit_kwargs["homepage"] = self.templates.globals["docs_url"]
@@ -524,7 +516,7 @@ class IsolatedGitHubManager(GitHubManager):
 			*,
 			managed_message="This file is managed by 'repo_helper'. Don't edit it directly.",
 			verbose: bool = False,
-			colour: Optional[bool] = True,
+			colour: ColourTrilean = True,
 			):
 
 		self._tmpdir = tempfile.TemporaryDirectory()
