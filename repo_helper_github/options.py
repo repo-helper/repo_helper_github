@@ -27,17 +27,18 @@ Reusable options for click.
 #
 
 # stdlib
-from typing import Callable
+from typing import Callable, TypeVar
 
 # 3rd party
 import click
-from click import Context, Option
 from domdf_python_tools.stringlist import DelimitedList
 
 __all__ = ["version_callback", "org_option"]
 
+_C = TypeVar("_C", bound=click.Command)
 
-def org_option() -> Callable:
+
+def org_option() -> Callable[[_C], _C]:
 	"""
 	Creates a ``--org`` option to specify that the repository belongs to an organisation.
 
@@ -55,7 +56,7 @@ def org_option() -> Callable:
 			)
 
 
-def version_callback(ctx: Context, param: Option, value: int):  # noqa: D103
+def version_callback(ctx: click.Context, param: click.Option, value: int):  # noqa: D103
 	# 3rd party
 	import repo_helper
 
