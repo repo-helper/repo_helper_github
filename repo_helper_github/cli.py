@@ -29,6 +29,7 @@ Manage GitHub repositories with ``repo-helper``.
 # stdlib
 import sys
 from functools import partial
+from typing import Callable
 
 # 3rd party
 import click
@@ -64,6 +65,7 @@ github_command = partial(github.command, context_settings=CONTEXT_SETTINGS)
 
 
 def options(command: Command) -> Command:
+	deco: Callable[[Command], Command]
 	for deco in [
 			colour_option(),
 			verbose_option(help_text="Show information on the GitHub API rate limit."),
