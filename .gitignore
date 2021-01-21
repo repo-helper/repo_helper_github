@@ -87,5 +87,7 @@ Pipfile.lock
 .pyre/
 update_all.py
 auto_merge.py
+pr_bulk_review.py
+killall_actions.py
 review_pre_commit_pr.py
 review_dependabot_pr.py
