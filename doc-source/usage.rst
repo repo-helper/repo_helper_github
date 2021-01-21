@@ -33,6 +33,13 @@ secrets
 	:prog: repo-helper github secrets
 	:nested: none
 
+labels
+********
+
+.. click:: repo_helper_github.cli:labels
+	:prog: repo-helper github labels
+	:nested: none
+
 Tokens
 ^^^^^^^^^
 
