@@ -44,3 +44,9 @@ additional_ignore:
  - killall_actions.py
  - review_pre_commit_pr.py
  - review_dependabot_pr.py
+
+classifiers:
+ - 'Development Status :: 4 - Beta'
+ - 'Environment :: Console'
+ - "Intended Audience :: Developers"
+ - 'Topic :: Software Development :: Version Control :: Git'

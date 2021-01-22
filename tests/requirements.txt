@@ -1,4 +1,3 @@
-git+https://github.com/domdfcoding/github3-utils
 betamax>=0.8.1
 coincidence>=0.1.0
 coverage>=5.1
