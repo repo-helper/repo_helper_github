@@ -24,7 +24,7 @@
 #
 
 # 3rd party
-from github3 import GitHub  # type: ignore
+from github3 import GitHub
 
 __all__ = ["Github"]
 

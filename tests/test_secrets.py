@@ -1,6 +1,6 @@
 # 3rd party
 from apeye import URL
-from github3.repos import Repository  # type: ignore
+from github3.repos import Repository
 
 
 def test_secrets(github_manager, example_config, module_cassette):

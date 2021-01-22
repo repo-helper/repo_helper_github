@@ -2,7 +2,7 @@
 import pytest
 from betamax import Betamax  # type: ignore
 from domdf_python_tools.paths import PathPlus
-from github3.session import GitHubSession  # type: ignore
+from github3.session import GitHubSession
 
 # this package
 from repo_helper_github import GitHubManager

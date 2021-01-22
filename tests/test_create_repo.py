@@ -3,7 +3,7 @@ import pytest
 from click.testing import CliRunner, Result
 from domdf_python_tools.paths import in_directory
 from domdf_python_tools.testing import check_file_regression
-from github3.exceptions import UnprocessableEntity  # type: ignore
+from github3.exceptions import UnprocessableEntity
 
 # this package
 from repo_helper_github.cli import new

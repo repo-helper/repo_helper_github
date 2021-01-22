@@ -41,10 +41,10 @@ from domdf_python_tools.paths import PathPlus
 from domdf_python_tools.typing import PathLike
 from dulwich.errors import NotGitRepository
 from dulwich.porcelain import fetch
-from github3 import GitHub, orgs, repos, users  # type: ignore
-from github3.exceptions import NotFoundError  # type: ignore
-from github3.repos import contents  # type: ignore
-from github3.repos.branch import Branch  # type: ignore
+from github3 import GitHub, orgs, repos, users
+from github3.exceptions import NotFoundError
+from github3.repos import contents
+from github3.repos.branch import Branch
 from github3_utils import echo_rate_limit as _utils_echo_rate_limit
 from github3_utils import get_user, protect_branch, secrets
 from github3_utils.check_labels import check_status_labels
@@ -336,6 +336,10 @@ class GitHubManager(RepoHelper):
 				raise abort(f"No such repository {repo_name} for {'org' if org else 'user'} {user.login}.")
 
 			gh_branch: Optional[Branch] = repo.branch(branch)
+
+			if not gh_branch:
+				raise click.UsageError(f"No such branch {branch}")
+
 			required_checks = list(compile_required_checks(self))
 
 			protect_branch(gh_branch, status_checks=required_checks)
