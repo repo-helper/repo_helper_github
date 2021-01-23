@@ -57,6 +57,7 @@ from southwark.repo import Repo
 from repo_helper_github._github import Github
 from repo_helper_github._types import _EditKwargs
 from repo_helper_github.cli import github_command
+from repo_helper_github.secret_validation import no_op_validator, validate_pypi_token
 
 __author__: str = "Dominic Davis-Foster"
 __copyright__: str = "2020-2021 Dominic Davis-Foster"
@@ -279,10 +280,10 @@ class GitHubManager(RepoHelper):
 			public_key = secrets.get_public_key(repo)
 
 			ret = 0
-			target_secrets = {"PYPI_TOKEN"}
+			target_secrets = {"PYPI_TOKEN": validate_pypi_token}
 
 			if self.templates.globals["enable_conda"]:
-				target_secrets.add("ANACONDA_TOKEN")
+				target_secrets["ANACONDA_TOKEN"] = no_op_validator
 
 			for secret_name in sorted(target_secrets):
 				if overwrite is not None:
@@ -296,10 +297,18 @@ class GitHubManager(RepoHelper):
 				if update:
 					operation = "update" if secret_name in existing_secrets else "create"
 
+					secret_value = locals().get(secret_name, None) or getpass(f"{secret_name}: ")
+
+					valid, invalid_reason = target_secrets[secret_name](secret_value)
+					if not valid:
+						raise click.Abort(
+								f"The value for {secret_name} does not appear to be valid: {invalid_reason}"
+								)
+
 					response = secrets.set_secret(
 							repo,
 							secret_name=secret_name,
-							value=locals().get(secret_name, None) or getpass(f"{secret_name}: "),
+							value=secret_value,
 							public_key=public_key,
 							)
 

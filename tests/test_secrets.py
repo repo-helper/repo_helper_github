@@ -1,6 +1,15 @@
+# stdlib
+import json
+
 # 3rd party
+import pymacaroons
+import pytest
 from apeye import URL
 from github3.repos import Repository
+from pymacaroons import Macaroon
+
+# this package
+from repo_helper_github import validate_pypi_token
 
 
 def test_secrets(github_manager, example_config, module_cassette):
@@ -16,7 +25,12 @@ def test_secrets(github_manager, example_config, module_cassette):
 	assert "PYPI_TOKEN" not in existing_secrets
 	assert "ANACONDA_TOKEN" not in existing_secrets
 
-	github_manager.secrets(PYPI_TOKEN="abcdefg", ANACONDA_TOKEN="hijklmnop", overwrite=False)
+	token = (
+			"pypi-AgEIcHlwaS5vcmcCCzEyMzQ1LTY3ODkwAAI5eyJwZXJtaXNzaW9ucyI6IHsicHJvamVjdHMiO"
+			"iBbImRpY3QyY3NzIl19LCAidmVyc2lvbiI6IDF9AAAGIKPx0SjZyXiAHSDI89qzSUwDTx_iWtoPJEztlNS7Q5I6"
+			)
+
+	github_manager.secrets(PYPI_TOKEN=token, ANACONDA_TOKEN="hijklmnop", overwrite=False)
 
 	# List of existing secrets.
 	raw_secrets = repo._json(repo._get(str(secrets_url), headers=repo.PREVIEW_HEADERS), 200)
@@ -80,3 +94,59 @@ def test_secrets(github_manager, example_config, module_cassette):
 #
 # 		assert "PYPI_TOKEN" in existing_secrets
 # 		assert "ANACONDA_TOKEN" in existing_secrets
+
+
+class TestValidatePyPIToken:
+
+	@pytest.mark.parametrize("token", ["HELLO_WORLD", "pypi_", "12345678"])
+	def test_wrong_start(self, token: str):
+		assert validate_pypi_token(token) == (False, "The token should start with 'pypi-'.")
+
+	@pytest.mark.parametrize("token", ["pypi-HELLO_WORLD", "pypi-12345678"])
+	def test_not_b64(self, token: str):
+		assert validate_pypi_token(token) == (False, "Could not decode token.")
+
+	def test_wrong_location(self):
+		fake_macaroon = Macaroon(
+				identifier=b"12345-67890",
+				signature="4eba1dde2d0866f550278e40bb354542",
+				location="github.com",
+				version=pymacaroons.MACAROON_V2,
+				)
+		fake_macaroon.add_first_party_caveat(json.dumps({"permissions": {"projects": ["dict2css"]}, "version": 1}))
+
+		assert validate_pypi_token(f"pypi-{fake_macaroon.serialize()}") == (False, "The token is not for PyPI.")
+
+	def test_no_caveats(self):
+		fake_macaroon = Macaroon(
+				identifier=b"12345-67890",
+				signature="4eba1dde2d0866f550278e40bb354542",
+				location="pypi.org",
+				version=pymacaroons.MACAROON_V2,
+				)
+
+		error_msg = "The decoded output does not have the expected format."
+		assert validate_pypi_token(f"pypi-{fake_macaroon.serialize()}") == (False, error_msg)
+
+	def test_caveat_not_json(self):
+		fake_macaroon = Macaroon(
+				identifier=b"12345-67890",
+				signature="4eba1dde2d0866f550278e40bb354542",
+				location="pypi.org",
+				version=pymacaroons.MACAROON_V2,
+				)
+		fake_macaroon.add_first_party_caveat("foo=bar")
+
+		error_msg = "The decoded output does not have the expected format."
+		assert validate_pypi_token(f"pypi-{fake_macaroon.serialize()}") == (False, error_msg)
+
+	def test_seemingly_valid(self):
+		fake_macaroon = Macaroon(
+				identifier=b"12345-67890",
+				signature="4eba1dde2d0866f550278e40bb354542",
+				location="pypi.org",
+				version=pymacaroons.MACAROON_V2,
+				)
+		fake_macaroon.add_first_party_caveat(json.dumps({"permissions": {"projects": ["dict2css"]}, "version": 1}))
+
+		assert validate_pypi_token(f"pypi-{fake_macaroon.serialize()}") == (True, '')
