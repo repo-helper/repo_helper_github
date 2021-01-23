@@ -24,12 +24,16 @@ def test_secrets(github_manager, example_config, module_cassette):
 	assert "PYPI_TOKEN" not in existing_secrets
 	assert "ANACONDA_TOKEN" not in existing_secrets
 
-	token = (
-			"pypi-AgEIcHlwaS5vcmcCCzEyMzQ1LTY3ODkwAAI5eyJwZXJtaXNzaW9ucyI6IHsicHJvamVjdHMiO"
-			"iBbImRpY3QyY3NzIl19LCAidmVyc2lvbiI6IDF9AAAGIKPx0SjZyXiAHSDI89qzSUwDTx_iWtoPJEztlNS7Q5I6"
-			)
+	token = (  # nosec: B105
+		"pypi-AgEIcHlwaS5vcmcCCzEyMzQ1LTY3ODkwAAI5eyJwZXJtaXNzaW9ucyI6IHsicHJvamVjdHMiO"
+		"iBbImRpY3QyY3NzIl19LCAidmVyc2lvbiI6IDF9AAAGIKPx0SjZyXiAHSDI89qzSUwDTx_iWtoPJEztlNS7Q5I6"
+		)
 
-	github_manager.secrets(PYPI_TOKEN=token, ANACONDA_TOKEN="hijklmnop", overwrite=False)
+	github_manager.secrets(
+			PYPI_TOKEN=token,
+			ANACONDA_TOKEN="hijklmnop",  # nosec: B105
+			overwrite=False,
+			)
 
 	# List of existing secrets.
 	raw_secrets = repo._json(repo._get(str(secrets_url), headers=repo.PREVIEW_HEADERS), 200)
