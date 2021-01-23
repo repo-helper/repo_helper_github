@@ -29,7 +29,7 @@ Manage GitHub repositories with ``repo-helper``.
 # stdlib
 import tempfile
 from getpass import getpass
-from typing import Iterator, Optional, Union
+from typing import Callable, Dict, Iterator, Optional, Tuple, Union
 
 # 3rd party
 import click
@@ -280,7 +280,7 @@ class GitHubManager(RepoHelper):
 			public_key = secrets.get_public_key(repo)
 
 			ret = 0
-			target_secrets = {"PYPI_TOKEN": validate_pypi_token}
+			target_secrets: Dict[str, Callable[[str], Tuple[bool, str]]] = {"PYPI_TOKEN": validate_pypi_token}
 
 			if self.templates.globals["enable_conda"]:
 				target_secrets["ANACONDA_TOKEN"] = no_op_validator

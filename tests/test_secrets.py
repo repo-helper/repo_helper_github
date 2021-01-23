@@ -2,11 +2,10 @@
 import json
 
 # 3rd party
-import pymacaroons
+import pymacaroons  # type: ignore
 import pytest
 from apeye import URL
 from github3.repos import Repository
-from pymacaroons import Macaroon
 
 # this package
 from repo_helper_github import validate_pypi_token
@@ -107,7 +106,7 @@ class TestValidatePyPIToken:
 		assert validate_pypi_token(token) == (False, "Could not decode token.")
 
 	def test_wrong_location(self):
-		fake_macaroon = Macaroon(
+		fake_macaroon = pymacaroons.Macaroon(
 				identifier=b"12345-67890",
 				signature="4eba1dde2d0866f550278e40bb354542",
 				location="github.com",
@@ -118,7 +117,7 @@ class TestValidatePyPIToken:
 		assert validate_pypi_token(f"pypi-{fake_macaroon.serialize()}") == (False, "The token is not for PyPI.")
 
 	def test_no_caveats(self):
-		fake_macaroon = Macaroon(
+		fake_macaroon = pymacaroons.Macaroon(
 				identifier=b"12345-67890",
 				signature="4eba1dde2d0866f550278e40bb354542",
 				location="pypi.org",
@@ -129,7 +128,7 @@ class TestValidatePyPIToken:
 		assert validate_pypi_token(f"pypi-{fake_macaroon.serialize()}") == (False, error_msg)
 
 	def test_caveat_not_json(self):
-		fake_macaroon = Macaroon(
+		fake_macaroon = pymacaroons.Macaroon(
 				identifier=b"12345-67890",
 				signature="4eba1dde2d0866f550278e40bb354542",
 				location="pypi.org",
@@ -141,7 +140,7 @@ class TestValidatePyPIToken:
 		assert validate_pypi_token(f"pypi-{fake_macaroon.serialize()}") == (False, error_msg)
 
 	def test_seemingly_valid(self):
-		fake_macaroon = Macaroon(
+		fake_macaroon = pymacaroons.Macaroon(
 				identifier=b"12345-67890",
 				signature="4eba1dde2d0866f550278e40bb354542",
 				location="pypi.org",
