@@ -61,7 +61,7 @@ from repo_helper_github.cli import github_command
 __author__: str = "Dominic Davis-Foster"
 __copyright__: str = "2020-2021 Dominic Davis-Foster"
 __license__: str = "MIT License"
-__version__: str = "0.5.0"
+__version__: str = "0.5.1"
 __email__: str = "dominic@davis-foster.co.uk"
 
 __all__ = [
@@ -74,7 +74,7 @@ __all__ = [
 		]
 
 echo_rate_limit = deprecated(
-		deprecated_in="0.5.0",
+		deprecated_in="0.5.1",
 		removed_in="1.0.0",
 		current_version=__version__,
 		details="Use the new 'github3-utils' package instead."
@@ -98,7 +98,7 @@ class GitHubManager(RepoHelper):
 	:param verbose: Whether to show information on the GitHub API rate limit.
 	:param colour: Whether to use coloured output.
 
-	.. versionchanged:: 0.5.0  Added the ``verbose`` and ``colour`` options.
+	.. versionchanged:: 0.5.1  Added the ``verbose`` and ``colour`` options.
 	"""  # noqa: D400
 
 	#:
@@ -108,14 +108,14 @@ class GitHubManager(RepoHelper):
 	"""
 	Whether to show information on the GitHub API rate limit.
 
-	.. versionadded: 0.5.0
+	.. versionadded: 0.5.1
 	"""
 
 	colour: ColourTrilean
 	"""
 	Whether to use coloured output.
 
-	.. versionadded: 0.5.0
+	.. versionadded: 0.5.1
 	"""
 
 	def __init__(
@@ -147,11 +147,11 @@ class GitHubManager(RepoHelper):
 		:param org: Whether the repository should be created for the organisation set as ``username``,
 			or for the authenticated user (default).
 
-		.. versionchanged:: 0.5.0
+		.. versionchanged:: 0.5.1
 
 			Removed the ``verbose`` option. Provide it to the class constructor instead.
 
-		.. versionchanged:: 0.5.0  Added the ``org`` argument.
+		.. versionchanged:: 0.5.1  Added the ``org`` argument.
 		"""
 
 		with self.echo_rate_limit():
@@ -192,11 +192,11 @@ class GitHubManager(RepoHelper):
 		:param org: Whether the repository should be created for the organisation set as ``username``,
 			or for the authenticated user (default).
 
-		.. versionchanged:: 0.5.0
+		.. versionchanged:: 0.5.1
 
 			Removed the ``verbose`` option. Provide it to the class constructor instead.
 
-		.. versionchanged:: 0.5.0  Added the ``org`` argument.
+		.. versionchanged:: 0.5.1  Added the ``org`` argument.
 		"""
 
 		with self.echo_rate_limit():
@@ -230,7 +230,7 @@ class GitHubManager(RepoHelper):
 
 		:param org:
 
-		.. versionadded:: 0.5.0
+		.. versionadded:: 0.5.1
 		"""  # noqa: D400
 
 		user = get_user(self.github)
@@ -259,8 +259,8 @@ class GitHubManager(RepoHelper):
 
 		``PYPI_TOKEN`` and ``ANACONDA_TOKEN`` can either be passed as keyword arguments to this function or provided at the interactive prompt.
 
-		.. versionadded:: 0.5.0
-		.. versionchanged:: 0.5.0  Add ``overwrite``, ``PYPI_TOKEN``, ``ANACONDA_TOKEN`` options.
+		.. versionadded:: 0.5.1
+		.. versionchanged:: 0.5.1  Add ``overwrite``, ``PYPI_TOKEN``, ``ANACONDA_TOKEN`` options.
 		"""
 
 		with self.echo_rate_limit():
@@ -323,7 +323,7 @@ class GitHubManager(RepoHelper):
 		:param org: Whether the repository should be created for the organisation set as ``username``,
 			or for the authenticated user (default).
 
-		.. versionadded:: 0.5.0
+		.. versionadded:: 0.5.1
 		"""
 
 		with self.echo_rate_limit():
@@ -419,7 +419,7 @@ class GitHubManager(RepoHelper):
 		:param org: Whether the repository should be created for the organisation set as ``username``,
 			or for the authenticated user (default).
 
-		.. versionadded:: 0.5.0
+		.. versionadded:: 0.5.1
 		"""
 
 		with self.echo_rate_limit():
@@ -445,7 +445,7 @@ class GitHubManager(RepoHelper):
 
 
 encrypt_secret = deprecated(
-		deprecated_in="0.5.0",
+		deprecated_in="0.5.1",
 		removed_in="1.0.0",
 		current_version=__version__,
 		details="Use the new 'github3-utils' package instead."
@@ -460,7 +460,7 @@ def compile_required_checks(repo: RepoHelper) -> Iterator[str]:
 
 	:param repo:
 
-	.. versionadded:: 0.5.0
+	.. versionadded:: 0.5.1
 	"""
 
 	actions_manager = ActionsManager(repo.target_repo, repo.templates)
@@ -509,7 +509,7 @@ class IsolatedGitHubManager(GitHubManager):
 	:param verbose: Whether to show information on the GitHub API rate limit.
 	:param colour: Whether to use coloured output.
 
-	.. versionadded:: 0.5.0
+	.. versionadded:: 0.5.1
 	"""  # noqa: D400
 
 	def __init__(
