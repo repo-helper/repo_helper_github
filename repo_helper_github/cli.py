@@ -37,6 +37,7 @@ from click import Command
 from consolekit import CONTEXT_SETTINGS
 from consolekit.options import colour_option, verbose_option, version_option
 from consolekit.terminal_colours import ColourTrilean
+from github3.exceptions import NotFoundError
 from github3_utils.click import token_option
 from repo_helper.cli import cli_group
 
@@ -145,7 +146,12 @@ def protect_branch(
 	# this package
 	from repo_helper_github import GitHubManager
 
-	sys.exit(GitHubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).protect_branch(branch, org=org))
+	manager = GitHubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour)
+
+	try:
+		sys.exit(manager.protect_branch(branch, org=org))
+	except NotFoundError:
+		raise click.UsageError(f"No such branch {branch}")
 
 
 @options

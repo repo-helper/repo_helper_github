@@ -332,6 +332,8 @@ class GitHubManager(RepoHelper):
 		:param org: Whether the repository should be created for the organisation set as ``username``,
 			or for the authenticated user (default).
 
+		:raises: :exc:`github3.exceptions.NotFoundError` if the branch is not found.
+
 		.. versionadded:: 0.5.1
 		"""
 
@@ -345,9 +347,8 @@ class GitHubManager(RepoHelper):
 				raise abort(f"No such repository {repo_name} for {'org' if org else 'user'} {user.login}.")
 
 			gh_branch: Optional[Branch] = repo.branch(branch)
-
 			if not gh_branch:
-				raise click.UsageError(f"No such branch {branch}")
+				raise NotFoundError
 
 			required_checks = list(compile_required_checks(self))
 
