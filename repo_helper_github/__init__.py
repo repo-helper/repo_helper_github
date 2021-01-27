@@ -133,6 +133,7 @@ class GitHubManager(RepoHelper):
 		self.github = Github(token=token)
 		self.verbose = verbose
 		self.colour = resolve_color_default(colour)
+		self.load_settings()
 
 	def echo_rate_limit(self):
 		"""
@@ -547,6 +548,8 @@ class IsolatedGitHubManager(GitHubManager):
 		(target_repo / config_file_name).write_bytes(contents_from_github.decoded)
 
 		RepoHelper.__init__(self, target_repo, managed_message)
+
+		self.load_settings()
 
 	def __del__(self):
 		self._tmpdir.cleanup()
