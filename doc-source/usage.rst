@@ -43,8 +43,8 @@ labels
 Tokens
 ^^^^^^^^^
 
-
-The token passed to the ``-t / --token`` argument, or set as the ``GITHUB_TOKEN`` environment variable,
+The token passed to the :option:`-t / --token <-t>` argument,
+or set as the ``GITHUB_TOKEN`` environment variable,
 must have the following OAuth scopes:
 
 * ``public_repo`` -- Access public repositories

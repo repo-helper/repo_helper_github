@@ -224,10 +224,10 @@ class GitHubManager(RepoHelper):
 
 	def get_org_or_user(self, org: bool = False) -> Union[orgs.Organization, users.User]:
 		"""
-		If ``org`` is :py:obj:`True`, returns the :class:`~.Organization` object representing the
+		If ``org`` is :py:obj:`True`, returns the :class:`~github3.orgs.Organization` object representing the
 		GitHub org that owns the repository.
 
-		If ``org`` is :py:obj:`False`, returns the :class:`~.AuthenticatedUser` object representing the
+		If ``org`` is :py:obj:`False`, returns the :class:`~github3.users.AuthenticatedUser` object representing the
 		GitHub user that owns the repository.
 
 		:param org:
@@ -412,8 +412,10 @@ class GitHubManager(RepoHelper):
 		repo.replace_topics(sorted(map(_lower, topics)))
 
 	def get_repo_kwargs(self) -> _EditKwargs:
-		"""
+		r"""
 		Returns the keyword arguments used when creating and updating repositories.
+
+		:rtype: :class:`~.typing.Dict`\[:class:`str`, :py:obj:`~.typing.Union`\[:class:`str`, :class:`bool`]]
 		"""
 
 		edit_kwargs: _EditKwargs = {"description": self.templates.globals["short_desc"]}
@@ -463,6 +465,11 @@ encrypt_secret = deprecated(
 		)(
 				secrets.encrypt_secret
 				)
+
+encrypt_secret.__doc__ = (encrypt_secret.__doc__ or '').replace(
+		":func:`~.get_secrets`",
+		":func:`~github3_utils.secrets.get_secrets`",
+		)
 
 
 def compile_required_checks(repo: RepoHelper) -> Iterator[str]:
