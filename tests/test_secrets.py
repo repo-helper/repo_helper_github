@@ -86,7 +86,7 @@ def test_secrets(github_manager, example_config, module_cassette):
 #
 # 		with in_directory(tmp_pathplus):
 # 			runner = CliRunner()
-# 			result: Result = runner.invoke(secrets, catch_exceptions=False, input="abcdefg\nhijklmnop\n")
+# 			result: Result = runner.invoke(secrets, input="abcdefg\nhijklmnop\n")
 #
 # 		assert result.exit_code == 0
 # 		check_file_regression(result.stdout.rstrip(), file_regression, extension=".md")

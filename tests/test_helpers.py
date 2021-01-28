@@ -4,7 +4,7 @@ import re
 # 3rd party
 import click
 import pytest
-from click.testing import CliRunner, Result
+from consolekit.testing import CliRunner, Result
 from domdf_python_tools.testing import check_file_regression
 
 # this package
@@ -29,10 +29,10 @@ def test_assert_org_member(github_manager, file_regression, capsys, cassette):
 def test_version(tmp_pathplus):
 	runner = CliRunner()
 
-	result: Result = runner.invoke(github, catch_exceptions=False, args=["--version"])
+	result: Result = runner.invoke(github, args=["--version"])
 	assert result.exit_code == 0
 	assert re.match(f"repo_helper_github version {__version__}", result.stdout.rstrip())
 
-	result = runner.invoke(github, catch_exceptions=False, args=["--version", "--version"])
+	result = runner.invoke(github, args=["--version", "--version"])
 	assert result.exit_code == 0
 	assert re.match(f"repo_helper_github version {__version__}, repo_helper .*", result.stdout.rstrip())

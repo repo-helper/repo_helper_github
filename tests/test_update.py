@@ -1,5 +1,5 @@
 # 3rd party
-from click.testing import CliRunner, Result
+from consolekit.testing import CliRunner, Result
 from domdf_python_tools.paths import in_directory
 from domdf_python_tools.testing import check_file_regression
 
@@ -33,7 +33,7 @@ def test_via_cli(
 		):
 	with in_directory(temp_github_repo):
 		runner = CliRunner()
-		result: Result = runner.invoke(update, catch_exceptions=False)
+		result: Result = runner.invoke(update)
 
 	assert result.exit_code == 0
 	check_file_regression(result.stdout.rstrip(), file_regression, extension=".md")

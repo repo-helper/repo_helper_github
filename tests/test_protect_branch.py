@@ -1,5 +1,5 @@
 # 3rd party
-from click.testing import CliRunner, Result
+from consolekit.testing import CliRunner, Result
 from domdf_python_tools.paths import in_directory
 from domdf_python_tools.testing import check_file_regression
 
@@ -20,7 +20,7 @@ def test_protect_branch(github_manager, module_cassette):
 def test_via_cli(betamax_github_session, temp_github_repo, file_regression, github_manager, module_cassette):
 	with in_directory(temp_github_repo):
 		runner = CliRunner()
-		result: Result = runner.invoke(protect_branch, catch_exceptions=False, args=["master"])
+		result: Result = runner.invoke(protect_branch, args=["master"])
 
 	assert result.exit_code == 0
 	check_file_regression(result.stdout.rstrip(), file_regression, extension=".md")

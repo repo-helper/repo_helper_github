@@ -1,6 +1,6 @@
 # 3rd party
 import pytest
-from click.testing import CliRunner, Result
+from consolekit.testing import CliRunner, Result
 from domdf_python_tools.paths import in_directory
 from domdf_python_tools.testing import check_file_regression
 from github3.exceptions import UnprocessableEntity
@@ -22,7 +22,7 @@ def test_create_repo(github_manager, temp_github_repo, module_cassette):
 def test_via_cli(betamax_github_session, temp_github_repo, file_regression, github_manager, module_cassette):
 	with in_directory(temp_github_repo):
 		runner = CliRunner()
-		result: Result = runner.invoke(new, catch_exceptions=False)
+		result: Result = runner.invoke(new)
 
 	assert result.exit_code == 0
 	check_file_regression(result.stdout.rstrip(), file_regression, extension=".md")
