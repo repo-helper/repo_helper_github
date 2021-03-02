@@ -1,3 +1,26 @@
 [build-system]
 requires = [ "setuptools>=40.6.0", "wheel>=0.34.2",]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "repo_helper_github"
+version = "0.5.1"
+description = "Manage GitHub repositories with repo-helper."
+readme = "README.rst"
+keywords = [ "github", "repo-helper",]
+dynamic = [ "requires-python", "classifiers", "dependencies",]
+[[project.authors]]
+email = "dominic@davis-foster.co.uk"
+name = "Dominic Davis-Foster"
+
+[project.license]
+file = "LICENSE"
+
+[project.urls]
+Homepage = "https://github.com/repo-helper/repo_helper_github"
+"Issue Tracker" = "https://github.com/repo-helper/repo_helper_github/issues"
+"Source Code" = "https://github.com/repo-helper/repo_helper_github"
+Documentation = "https://repo_helper_github.readthedocs.io/en/latest"
+
+[project.entry-points."repo_helper.command"]
+repo_helper_github = "repo_helper_github.cli:github"
