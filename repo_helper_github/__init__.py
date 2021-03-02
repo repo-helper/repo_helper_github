@@ -184,7 +184,7 @@ class GitHubManager(RepoHelper):
 			click.echo(f"Success! View the repository online at {repo.html_url}")
 
 			try:
-				dulwich_repo = Repo('.')
+				dulwich_repo = Repo(self.target_repo)
 			except NotGitRepository:
 				return 0
 

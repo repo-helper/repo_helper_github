@@ -10,7 +10,7 @@ repo-helper github
 	:nested: none
 
 Commands
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^
 
 new
 *****
