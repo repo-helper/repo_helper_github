@@ -46,7 +46,8 @@ from github3.exceptions import NotFoundError
 from github3.repos import contents
 from github3.repos.branch import Branch
 from github3_utils import echo_rate_limit as _utils_echo_rate_limit
-from github3_utils import get_user, protect_branch, secrets
+from github3_utils import get_user as _utils_get_user
+from github3_utils import protect_branch, secrets
 from github3_utils.check_labels import check_status_labels
 from repo_helper.core import RepoHelper
 from repo_helper.files.ci_cd import ActionsManager, platform_ci_names
@@ -81,6 +82,15 @@ echo_rate_limit = deprecated(
 		details="Use the new 'github3-utils' package instead."
 		)(
 				_utils_echo_rate_limit
+				)
+
+get_user = deprecated(
+		deprecated_in="0.5.2",
+		removed_in="1.0.0",
+		current_version=__version__,
+		details="Use the new 'github3-utils' package instead."
+		)(
+				_utils_get_user
 				)
 
 
@@ -140,7 +150,7 @@ class GitHubManager(RepoHelper):
 		Contextmanager to echo the GitHub API rate limit before and after making a series of requests.
 		"""
 
-		return echo_rate_limit(self.github, self.verbose)
+		return _utils_echo_rate_limit(self.github, self.verbose)
 
 	def new(self, org: bool = False) -> int:
 		"""
@@ -235,7 +245,7 @@ class GitHubManager(RepoHelper):
 		.. versionadded:: 0.5.1
 		"""  # noqa: D400
 
-		user = get_user(self.github)
+		user = _utils_get_user(self.github)
 
 		if org:
 			self.assert_org_member(user)

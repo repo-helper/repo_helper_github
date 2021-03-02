@@ -6,9 +6,10 @@ import click
 import pytest
 from consolekit.testing import CliRunner, Result
 from domdf_python_tools.testing import check_file_regression
+from github3_utils import echo_rate_limit, get_user
 
 # this package
-from repo_helper_github import __version__, echo_rate_limit, get_user
+from repo_helper_github import __version__
 from repo_helper_github.cli import github
 
 
