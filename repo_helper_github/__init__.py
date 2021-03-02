@@ -365,6 +365,9 @@ class GitHubManager(RepoHelper):
 
 			protect_branch(gh_branch, status_checks=required_checks)
 
+			# This seems to only work if its run twice
+			protect_branch(gh_branch, status_checks=required_checks)
+
 		click.echo("Up to date!")
 		return 0
 

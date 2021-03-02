@@ -629,6 +629,133 @@
       "request": {
         "body": {
           "encoding": "utf-8",
+          "string": "{\"required_status_checks\": {\"strict\": false, \"contexts\": [\"windows-2019 / Python 3.6\", \"windows-2019 / Python 3.7\", \"windows-2019 / Python 3.8\", \"windows-2019 / Python 3.9\", \"ubuntu-20.04 / Python 3.6\", \"ubuntu-20.04 / Python 3.7\", \"ubuntu-20.04 / Python 3.8\", \"ubuntu-20.04 / Python 3.9\", \"mypy / ubuntu-20.04\", \"Flake8\", \"docs\"]}, \"enforce_admins\": null, \"required_pull_request_reviews\": {\"dismiss_stale_reviews\": false, \"required_approving_review_count\": 1}, \"restrictions\": null}"
+        },
+        "headers": {
+          "User-Agent": [
+            "github3.py/1.3.0"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Accept": [
+            "application/vnd.github.luke-cage-preview+json"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Accept-Charset": [
+            "utf-8"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Content-Length": [
+            "484"
+          ],
+          "Authorization": [
+            "token FAKE_TOKEN"
+          ]
+        },
+        "method": "PUT",
+        "uri": "https://api.github.com/repos/domdfcoding/repo_helper_demo/branches/master/protection"
+      },
+      "response": {
+        "body": {
+          "encoding": "utf-8",
+          "base64_string": "H4sIAAAAAAAAA71U204DIRT8lYbnWlo1XvYDfPbdGELhtEvKAnIOrk3Tf/egGy+127f6RMIMmYEzw06U7EUjWqKEjZQ6udnaUVuWMxM7mSFFlDZ2dmWidWH9saNa8AmystBFucw6mBZQdhoJskw5EhhyMYipyPBSXAarkDQVVEw0GxTN7oyybPGo6FQgZWdINCvtEabCxEDwRmznSfQu2NjjxeV8cT+Rk8cttTFMrmY3fIkx7PYEdncCu2esLEugwnKz+fWh3hhW9cawqjeGVb1um7asM1C8JkDi7QevN1DP2mhQPH+/iTpfLEbmI7/Gsf+Rm1S8V3Wg7JfXVwf9v8XnqDY/lcPOIdZIe/j2NIRqCJ/iuoCKfeCafNn+TbFKJy7LK7dqoPAhToVoFvwCEFYxG1Dadi6c+8oHYlVdLz3YoSo/B+JdAJ1V65Bi3tYm/+Fq72OvPu2ngvw3nKBZ8FA/i2Oc/Tt0UjH/ngQAAA=="
+        },
+        "headers": {
+          "Date": [
+            "Wed, 30 Dec 2020 23:19:18 GMT"
+          ],
+          "Content-Type": [
+            "application/json; charset=utf-8"
+          ],
+          "Transfer-Encoding": [
+            "chunked"
+          ],
+          "Server": [
+            "GitHub.com"
+          ],
+          "Status": [
+            "200 OK"
+          ],
+          "Cache-Control": [
+            "private, max-age=60, s-maxage=60"
+          ],
+          "Vary": [
+            "Accept, Authorization, Cookie, X-GitHub-OTP",
+            "Accept-Encoding, Accept, X-Requested-With",
+            "Accept-Encoding"
+          ],
+          "ETag": [
+            "W/\"0f763c6ae4cae041ea04652f469805db0d4acc4b582af7dd79ee0e1882b4c5fd\""
+          ],
+          "X-OAuth-Scopes": [
+            "public_repo, read:org, workflow"
+          ],
+          "X-Accepted-OAuth-Scopes": [
+            ""
+          ],
+          "X-GitHub-Media-Type": [
+            "github.luke-cage-preview; format=json"
+          ],
+          "X-RateLimit-Limit": [
+            "5000"
+          ],
+          "X-RateLimit-Remaining": [
+            "4881"
+          ],
+          "X-RateLimit-Reset": [
+            "1609373045"
+          ],
+          "X-RateLimit-Used": [
+            "119"
+          ],
+          "Access-Control-Expose-Headers": [
+            "ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset"
+          ],
+          "Access-Control-Allow-Origin": [
+            "*"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=31536000; includeSubdomains; preload"
+          ],
+          "X-Frame-Options": [
+            "deny"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ],
+          "X-XSS-Protection": [
+            "1; mode=block"
+          ],
+          "Referrer-Policy": [
+            "origin-when-cross-origin, strict-origin-when-cross-origin"
+          ],
+          "Content-Security-Policy": [
+            "default-src 'none'"
+          ],
+          "Content-Encoding": [
+            "gzip"
+          ],
+          "X-GitHub-Request-Id": [
+            "B586:1F93:22495D4D:27707414:5FED0AF6"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.github.com/repos/domdfcoding/repo_helper_demo/branches/master/protection"
+      },
+      "recorded_at": "2020-12-30T23:19:18"
+    },
+    {
+      "request": {
+        "body": {
+          "encoding": "utf-8",
           "string": ""
         },
         "headers": {
