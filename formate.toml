@@ -47,6 +47,7 @@ known_third_party = [
     "github3_utils",
     "pymacaroons",
     "pynacl",
+    "pyreadline",
     "pytest",
     "pytest_cov",
     "pytest_randomly",
