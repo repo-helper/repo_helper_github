@@ -95,7 +95,7 @@ repo_helper_github
 		:alt: GitHub top language
 
 	.. |commits-since| github-shield::
-		:commits-since: v0.5.1
+		:commits-since: v0.6.0
 		:alt: GitHub commits since tagged version
 
 	.. |commits-latest| github-shield::
