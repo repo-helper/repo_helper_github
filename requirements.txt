@@ -1,5 +1,6 @@
 click>=7.1.2
 consolekit>=1.0.0
+cryptography==3.3.2; platform_system != "Linux"
 deprecation-alias>=0.1.1
 domdf-python-tools>=2.0.0
 dulwich!=0.20.7,!=0.20.8,!=0.20.9,>=0.20.5
@@ -9,4 +10,3 @@ pymacaroons>=0.13.0
 repo-helper>=2020.12.18
 southwark>=0.4.0
 typing-extensions>=3.7.4.3
-cryptography==3.3.2; platform_system != "Linux"
