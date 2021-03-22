@@ -39,6 +39,7 @@ known_third_party = [
     "consolekit",
     "coverage",
     "coverage_pyver_pragma",
+    "cryptography",
     "deprecation_alias",
     "domdf_python_tools",
     "dulwich",
