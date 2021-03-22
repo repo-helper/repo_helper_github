@@ -9,3 +9,4 @@ pymacaroons>=0.13.0
 repo-helper>=2020.12.18
 southwark>=0.4.0
 typing-extensions>=3.7.4.3
+cryptography==3.3.2; platform_system != "Linux"
