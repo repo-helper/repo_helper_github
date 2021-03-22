@@ -4,7 +4,7 @@ repo_helper_github
 
 .. start short_desc
 
-**Manage GitHub repositories with repo-helper.**
+.. documentation-summary::
 
 .. end short_desc
 
