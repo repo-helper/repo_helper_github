@@ -9,9 +9,11 @@ description = "Manage GitHub repositories with repo-helper."
 readme = "README.rst"
 keywords = [ "github", "repo-helper",]
 dynamic = [ "requires-python", "classifiers", "dependencies",]
+
 [[project.authors]]
 email = "dominic@davis-foster.co.uk"
 name = "Dominic Davis-Foster"
+
 
 [project.license]
 file = "LICENSE"
@@ -22,5 +24,11 @@ Homepage = "https://github.com/repo-helper/repo_helper_github"
 "Source Code" = "https://github.com/repo-helper/repo_helper_github"
 Documentation = "https://repo_helper_github.readthedocs.io/en/latest"
 
+[tool.dep_checker]
+allowed_unused = [ "cryptography",]
+
 [project.entry-points."repo_helper.command"]
 repo_helper_github = "repo_helper_github.cli:github"
+
+[tool.dep_checker.name_mapping]
+github3_py = "github3"
