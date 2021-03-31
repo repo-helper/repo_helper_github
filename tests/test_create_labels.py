@@ -1,7 +1,7 @@
 # 3rd party
+from coincidence.regressions import AdvancedFileRegressionFixture
 from consolekit.testing import CliRunner, Result
 from domdf_python_tools.paths import in_directory
-from domdf_python_tools.testing import check_file_regression
 from github3_utils.check_labels import check_status_labels
 
 # this package
@@ -18,13 +18,20 @@ def test_create_labels(github_manager, module_cassette):
 		assert label in current_labels
 
 
-def test_via_cli(betamax_github_session, temp_github_repo, file_regression, github_manager, module_cassette):
+def test_via_cli(
+		betamax_github_session,
+		temp_github_repo,
+		advanced_file_regression: AdvancedFileRegressionFixture,
+		github_manager,
+		module_cassette,
+		):
+
 	with in_directory(temp_github_repo):
 		runner = CliRunner()
 		result: Result = runner.invoke(labels)
 
 	assert result.exit_code == 0
-	check_file_regression(result.stdout.rstrip(), file_regression, extension=".md")
+	result.check_stdout(advanced_file_regression, extension=".md")
 
 	repo = github_manager.github.repository("domdfcoding", "repo_helper_demo")
 	current_labels = {label.name: label for label in repo.labels()}

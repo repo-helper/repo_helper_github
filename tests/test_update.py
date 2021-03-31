@@ -1,7 +1,7 @@
 # 3rd party
+from coincidence.regressions import AdvancedFileRegressionFixture
 from consolekit.testing import CliRunner, Result
 from domdf_python_tools.paths import in_directory
-from domdf_python_tools.testing import check_file_regression
 
 # this package
 from repo_helper_github.cli import update
@@ -27,7 +27,7 @@ def test_update(github_manager, temp_github_repo, module_cassette):
 def test_via_cli(
 		betamax_github_session,
 		temp_github_repo,
-		file_regression,
+		advanced_file_regression: AdvancedFileRegressionFixture,
 		github_manager,
 		module_cassette,
 		):
@@ -36,7 +36,7 @@ def test_via_cli(
 		result: Result = runner.invoke(update)
 
 	assert result.exit_code == 0
-	check_file_regression(result.stdout.rstrip(), file_regression, extension=".md")
+	result.check_stdout(advanced_file_regression, extension=".md")
 
 	# Check the repository has been updated
 	repo = github_manager.github.repository("domdfcoding", "repo_helper_demo")

@@ -11,7 +11,7 @@ from repo_helper_github._github import Github
 with Betamax.configure() as config:
 	config.cassette_library_dir = PathPlus(__file__).parent / "cassettes"
 
-pytest_plugins = ("domdf_python_tools.testing", "github3_utils.testing", "repo_helper.testing")
+pytest_plugins = ("coincidence", "github3_utils.testing", "repo_helper.testing")
 
 
 @pytest.fixture()
