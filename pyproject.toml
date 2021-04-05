@@ -27,6 +27,11 @@ Documentation = "https://repo_helper_github.readthedocs.io/en/latest"
 [tool.dep_checker]
 allowed_unused = [ "cryptography",]
 
+[tool.mkrecipe]
+conda-channels = [ "repo-helper",]
+extras = "all"
+license-key = "MIT"
+
 [project.entry-points."repo_helper.command"]
 repo_helper_github = "repo_helper_github.cli:github"
 
