@@ -382,7 +382,7 @@ class GitHubManager(RepoHelper):
 			raise abort(
 					f"The username configured in 'repo_helper.yml' ({self.templates.globals['username']}) "
 					f"differs from that of the authenticated user ({user.login})!\n"
-					f"If {self.templates.globals['username']} is an organisation you should use the --org flag."
+					f"If {self.templates.globals['username']!r} is an organisation you should use the --org flag."
 					)
 
 	def assert_org_member(self, user: users.User):
