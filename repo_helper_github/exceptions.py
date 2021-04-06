@@ -117,7 +117,7 @@ class NoSuchRepository(GitHubException):
 	@property
 	def full_name(self) -> str:
 		"""
-		The full name (``user/name``) of the repository which doesn't exist.,
+		The full name (``user/name``) of the repository which doesn't exist.
 		"""
 
 		return f"{self.username}/{self.repository}"

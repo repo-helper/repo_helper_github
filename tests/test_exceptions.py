@@ -41,7 +41,7 @@ def test_GitHubException(exception: GitHubException):
 	with pytest.raises(GitHubException):
 		raise exception
 
-	with pytest.raises(ValueError):
+	with pytest.raises(ValueError):  # noqa: PT011
 		raise exception
 
 

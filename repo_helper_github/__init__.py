@@ -239,7 +239,12 @@ class GitHubManager(RepoHelper):
 
 		return 0
 
-	def _get_repository(self, user: users.User, repository: str, org: bool) -> repos.Repository:
+	def _get_repository(
+			self,
+			user: Union[users.User, orgs.Organization],
+			repository: str,
+			org: bool,
+			) -> repos.Repository:
 		try:
 			repo: Optional[repos.Repository] = self.github.repository(user.login, repository)
 		except NotFoundError:
