@@ -90,8 +90,10 @@ def new(token: str, verbose: bool = False, colour: ColourTrilean = None, org: bo
 
 	# this package
 	from repo_helper_github import GitHubManager
+	from repo_helper_github.exceptions import TracebackHandler
 
-	sys.exit(GitHubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).new(org=org))
+	with TracebackHandler()():
+		sys.exit(GitHubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).new(org=org))
 
 
 @options
@@ -106,8 +108,10 @@ def update(token: str, verbose: bool = False, colour: ColourTrilean = None, org:
 
 	# this package
 	from repo_helper_github import GitHubManager
+	from repo_helper_github.exceptions import TracebackHandler
 
-	sys.exit(GitHubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).update(org=org))
+	with TracebackHandler()():
+		sys.exit(GitHubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).update(org=org))
 
 
 @options
@@ -122,8 +126,10 @@ def secrets(token: str, verbose: bool = False, colour: ColourTrilean = None, org
 
 	# this package
 	from repo_helper_github import GitHubManager
+	from repo_helper_github.exceptions import TracebackHandler
 
-	sys.exit(GitHubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).secrets(org=org))
+	with TracebackHandler()():
+		sys.exit(GitHubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).secrets(org=org))
 
 
 @click.argument("branch", type=click.STRING)
@@ -145,13 +151,15 @@ def protect_branch(
 
 	# this package
 	from repo_helper_github import GitHubManager
+	from repo_helper_github.exceptions import TracebackHandler
 
-	manager = GitHubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour)
+	with TracebackHandler()():
+		manager = GitHubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour)
 
-	try:
-		sys.exit(manager.protect_branch(branch, org=org))
-	except NotFoundError:
-		raise click.UsageError(f"No such branch {branch}")
+		try:
+			sys.exit(manager.protect_branch(branch, org=org))
+		except NotFoundError:
+			raise click.UsageError(f"No such branch {branch}")
 
 
 @options
@@ -166,5 +174,7 @@ def labels(token: str, verbose: bool = False, colour: ColourTrilean = None, org:
 
 	# this package
 	from repo_helper_github import GitHubManager
+	from repo_helper_github.exceptions import TracebackHandler
 
-	sys.exit(GitHubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).create_labels(org=org))
+	with TracebackHandler()():
+		sys.exit(GitHubManager(token, PathPlus.cwd(), verbose=verbose, colour=colour).create_labels(org=org))

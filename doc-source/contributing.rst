@@ -1,6 +1,5 @@
-==============
-Contributing
-==============
+Overview
+---------
 
 .. This file based on https://github.com/PyGithub/PyGithub/blob/master/CONTRIBUTING.md
 

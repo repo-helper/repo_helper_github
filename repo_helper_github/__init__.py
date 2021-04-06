@@ -35,7 +35,6 @@ from typing import Callable, Dict, Iterator, Optional, Tuple, Union
 import click
 from consolekit.input import confirm
 from consolekit.terminal_colours import ColourTrilean, Fore, resolve_color_default
-from consolekit.utils import abort
 from deprecation_alias import deprecated
 from domdf_python_tools.paths import PathPlus
 from domdf_python_tools.typing import PathLike
@@ -58,6 +57,13 @@ from southwark.repo import Repo
 from repo_helper_github._github import Github
 from repo_helper_github._types import _EditKwargs
 from repo_helper_github.cli import github_command
+from repo_helper_github.exceptions import (
+		BadUsername,
+		ErrorCreatingRepository,
+		NoSuchBranch,
+		NoSuchRepository,
+		OrganizationError
+		)
 from repo_helper_github.secret_validation import no_op_validator, validate_pypi_token
 
 __author__: str = "Dominic Davis-Foster"
@@ -156,8 +162,10 @@ class GitHubManager(RepoHelper):
 		"""
 		Create a new GitHub repository for this project.
 
-		:param org: Whether the repository should be created for the organisation set as ``username``,
+		:param org: Whether the repository should be created for the organization set as ``username``,
 			or for the authenticated user (default).
+
+		:rtype:
 
 		.. versionchanged:: 0.3.0
 
@@ -178,7 +186,7 @@ class GitHubManager(RepoHelper):
 				repo = self.github.create_repository(repo_name, **self.get_repo_kwargs())
 
 			if repo is None:
-				raise abort(f"No such repository {repo_name} for {'org' if org else 'user'} {user.login}.")
+				raise ErrorCreatingRepository(user.login, repo_name, org=org)
 
 			self.update_topics(repo)
 			click.echo(f"Success! View the repository online at {repo.html_url}")
@@ -201,8 +209,10 @@ class GitHubManager(RepoHelper):
 		"""
 		Update the GitHub repository for this project.
 
-		:param org: Whether the repository should be created for the organisation set as ``username``,
+		:param org: Whether the repository should be created for the organization set as ``username``,
 			or for the authenticated user (default).
+
+		:rtype:
 
 		.. versionchanged:: 0.3.0
 
@@ -214,10 +224,7 @@ class GitHubManager(RepoHelper):
 		with self.echo_rate_limit():
 			user = self.get_org_or_user(org)
 			repo_name = self.templates.globals["repo_name"]
-			repo: Optional[repos.Repository] = self.github.repository(user.login, repo_name)
-
-			if repo is None:
-				raise abort(f"No such repository {repo_name} for {'org' if org else 'user'} {user.login}.")
+			repo: repos.Repository = self._get_repository(user, repo_name, org)
 
 			# TODO: add config option for allow_merge_commit
 
@@ -232,6 +239,17 @@ class GitHubManager(RepoHelper):
 
 		return 0
 
+	def _get_repository(self, user: users.User, repository: str, org: bool) -> repos.Repository:
+		try:
+			repo: Optional[repos.Repository] = self.github.repository(user.login, repository)
+		except NotFoundError:
+			repo = None
+
+		if repo is None:
+			raise NoSuchRepository(user.login, repository, org=org)
+
+		return repo
+
 	def get_org_or_user(self, org: bool = False) -> Union[orgs.Organization, users.User]:
 		"""
 		If ``org`` is :py:obj:`True`, returns the :class:`~github3.orgs.Organization` object representing the
@@ -240,9 +258,9 @@ class GitHubManager(RepoHelper):
 		If ``org`` is :py:obj:`False`, returns the :class:`~github3.users.AuthenticatedUser` object representing the
 		GitHub user that owns the repository.
 
-		:param org:
-
 		.. versionadded:: 0.3.0
+
+		:param org:
 		"""  # noqa: D400
 
 		user = _utils_get_user(self.github)
@@ -264,25 +282,24 @@ class GitHubManager(RepoHelper):
 		"""
 		Set or update the secrets of the GitHub repository for this project.
 
-		:param org: Whether the repository should be created for the organisation set as ``username``,
+		.. versionadded:: 0.3.0
+
+		:param org: Whether the repository should be created for the organization set as ``username``,
 			or for the authenticated user (default).
 		:param overwrite: Overwrite existing values.
 		:default overwrite: ask first.
 
 		``PYPI_TOKEN`` and ``ANACONDA_TOKEN`` can either be passed as keyword arguments to this function or provided at the interactive prompt.
 
-		.. versionadded:: 0.3.0
+		:rtype:
+
 		.. versionchanged:: 0.4.0  Add ``overwrite``, ``PYPI_TOKEN``, ``ANACONDA_TOKEN`` options.
 		"""
 
 		with self.echo_rate_limit():
 			user = self.get_org_or_user(org)
 			repo_name = self.templates.globals["repo_name"]
-
-			repo: Optional[repos.Repository] = self.github.repository(user.login, repo_name)
-
-			if repo is None:
-				raise abort(f"No such repository {repo_name} for {'org' if org else 'user'} {user.login}.")
+			repo: repos.Repository = self._get_repository(user, repo_name, org)
 
 			# List of existing secrets.
 			existing_secrets = secrets.get_secrets(repo)
@@ -339,27 +356,26 @@ class GitHubManager(RepoHelper):
 
 		This requires that the Linux and Windows tests pass, together with the mypy check.
 
+		.. versionadded:: 0.4.0
+
 		:param branch: The branch to update protection for.
-		:param org: Whether the repository should be created for the organisation set as ``username``,
+		:param org: Whether the repository should be created for the organization set as ``username``,
 			or for the authenticated user (default).
 
-		:raises: :exc:`github3.exceptions.NotFoundError` if the branch is not found.
+		:raises:
 
-		.. versionadded:: 0.4.0
+			* :exc:`~.NoSuchBranch` if the branch is not found.
+			* :exc:`~.NoSuchRepository` if the repository is not found.
 		"""
 
 		with self.echo_rate_limit():
 			user = self.get_org_or_user(org)
 			repo_name = self.templates.globals["repo_name"]
-
-			repo: Optional[repos.Repository] = self.github.repository(user.login, repo_name)
-
-			if repo is None:
-				raise abort(f"No such repository {repo_name} for {'org' if org else 'user'} {user.login}.")
+			repo: repos.Repository = self._get_repository(user, repo_name, org)
 
 			gh_branch: Optional[Branch] = repo.branch(branch)
 			if not gh_branch:
-				raise NotFoundError
+				raise NoSuchBranch(user.login, repo_name, branch)
 
 			required_checks = list(compile_required_checks(self))
 
@@ -378,28 +394,34 @@ class GitHubManager(RepoHelper):
 		:param user:
 		"""
 
-		if user.login != self.templates.globals["username"]:
-			raise abort(
-					f"The username configured in 'repo_helper.yml' ({self.templates.globals['username']}) "
+		username = self.templates.globals["username"]
+
+		if user.login != username:
+			raise BadUsername(
+					f"The username configured in 'repo_helper.yml' ({username}) "
 					f"differs from that of the authenticated user ({user.login})!\n"
-					f"If {self.templates.globals['username']!r} is an organisation you should use the --org flag."
+					f"If {self.templates.globals['username']!r} is an organization you should use the --org flag.",
+					username=username,
 					)
 
 	def assert_org_member(self, user: users.User):
 		"""
-		Assert that the organisation configured in ``repo_helper.yml`` exists, and the authenticated user is a member.
+		Assert that the organization configured in ``repo_helper.yml`` exists, and the authenticated user is a member.
 
 		:param user:
 		"""
 
+		username = self.templates.globals["username"]
+
 		def error():
-			raise abort(
-					f"Either the organisation configured in 'repo_helper.yml' ({self.templates.globals['username']}) "
-					f"does not exist or the authenticated user ({user.login}) is not a member!"
+			raise OrganizationError(
+					f"Either the organization configured in 'repo_helper.yml' ({username}) "
+					f"does not exist or the authenticated user ({user.login}) is not a member!",
+					username,
 					)
 
 		try:
-			org = self.github.organization(self.templates.globals["username"])
+			org = self.github.organization(username)
 		except NotFoundError:
 			raise error()
 
@@ -442,19 +464,16 @@ class GitHubManager(RepoHelper):
 		"""
 		Create labels for this repository.
 
-		:param org: Whether the repository should be created for the organisation set as ``username``,
-			or for the authenticated user (default).
-
 		.. versionadded:: 0.5.0
+
+		:param org: Whether the repository should be created for the organization set as ``username``,
+			or for the authenticated user (default).
 		"""
 
 		with self.echo_rate_limit():
 			user = self.get_org_or_user(org)
 			repo_name = self.templates.globals["repo_name"]
-			repo: Optional[repos.Repository] = self.github.repository(user.login, repo_name)
-
-			if repo is None:
-				raise abort(f"No such repository {repo_name} for {'org' if org else 'user'} {user.login}.")
+			repo: repos.Repository = self._get_repository(user, repo_name, org)
 
 			current_labels = {label.name: label for label in repo.labels()}
 
@@ -489,9 +508,9 @@ def compile_required_checks(repo: RepoHelper) -> Iterator[str]:
 	"""
 	Returns an iterator over the names of required checks for the given repository.
 
-	:param repo:
-
 	.. versionadded:: 0.4.0
+
+	:param repo:
 	"""
 
 	actions_manager = ActionsManager(repo.target_repo, repo.templates)
@@ -532,15 +551,14 @@ class IsolatedGitHubManager(GitHubManager):
 	Subclass of :class:`~.GitHubManager` which can be used isolated from the repository
 	and its ``repo_helper.yml`` config file.
 
-	:param token: The token to authenticate with the GitHub API.
+	.. versionadded:: 0.4.0
 
+	:param token: The token to authenticate with the GitHub API.
 	:param username: The username of the GitHub account hosting the repository.
 	:param repo_name: The name of GitHub repository.
 	:param managed_message: Message placed at the top of files to indicate that they are managed by ``repo_helper``.
 	:param verbose: Whether to show information on the GitHub API rate limit.
 	:param colour: Whether to use coloured output.
-
-	.. versionadded:: 0.4.0
 	"""  # noqa: D400
 
 	def __init__(

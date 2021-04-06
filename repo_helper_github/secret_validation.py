@@ -45,6 +45,8 @@ def validate_pypi_token(token: str) -> Tuple[bool, str]:
 	:param token:
 	"""
 
+	# TODO: perhaps use the pypitokens library?
+
 	if not token.startswith("pypi-"):
 		return False, "The token should start with 'pypi-'."
 

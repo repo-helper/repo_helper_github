@@ -13,6 +13,7 @@ short_desc: "Manage GitHub repositories with repo-helper."
 use_whey: true
 enable_conda: False
 min_coverage: 85
+sphinx_html_theme: furo
 
 entry_points:
  repo_helper.command:
@@ -37,9 +38,6 @@ extra_sphinx_extensions:
 intersphinx_mapping:
  - '"github3": ("https://github3py.readthedocs.io/en/master/", None)'
  - "'click': ('https://click.palletsprojects.com/en/7.x/', None)"
-
-sphinx_html_theme: furo
-standalone_contrib_guide: true
 
 additional_ignore:
  - update_all.py

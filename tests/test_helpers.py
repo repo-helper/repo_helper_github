@@ -2,7 +2,6 @@
 import re
 
 # 3rd party
-import click
 import pytest
 from coincidence.regressions import AdvancedFileRegressionFixture
 from consolekit.testing import CliRunner, Result
@@ -10,7 +9,7 @@ from domdf_python_tools.paths import PathPlus
 from github3_utils import echo_rate_limit, get_user
 
 # this package
-from repo_helper_github import __version__
+from repo_helper_github import OrganizationError, __version__
 from repo_helper_github.cli import github
 
 
@@ -28,14 +27,21 @@ def test_rate_limit(
 
 def test_assert_org_member(
 		github_manager,
-		advanced_file_regression: AdvancedFileRegressionFixture,
 		capsys,
 		cassette,
 		):
-	with pytest.raises(click.Abort):
+
+	error_msg = (
+			r"Either the organization configured in 'repo_helper.yml' \(domdfcoding\) does not exist "
+			r"or the authenticated user \(domdfcoding\) is not a member!"
+			)
+
+	with pytest.raises(OrganizationError, match=error_msg):
 		github_manager.assert_org_member(get_user(github_manager.github))
 
-	advanced_file_regression.check(capsys.readouterr().err, extension=".md")
+	capout = capsys.readouterr()
+	assert not capout.out
+	assert not capout.err
 
 
 def test_version(tmp_pathplus: PathPlus):

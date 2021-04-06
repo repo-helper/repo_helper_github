@@ -1,5 +1,5 @@
 click>=7.1.2
-consolekit>=1.0.0
+consolekit>=1.1.2
 cryptography==3.3.2; platform_system != "Linux"
 deprecation-alias>=0.1.1
 domdf-python-tools>=2.0.0

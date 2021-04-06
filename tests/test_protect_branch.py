@@ -28,8 +28,8 @@ def test_via_cli(
 		runner = CliRunner()
 		result: Result = runner.invoke(protect_branch, args=["master"])
 
-	assert result.exit_code == 0
 	result.check_stdout(advanced_file_regression, extension=".md")
+	assert result.exit_code == 0
 
 	repo = github_manager.github.repository("domdfcoding", "repo_helper_demo")
 	branch = repo.branch("master")

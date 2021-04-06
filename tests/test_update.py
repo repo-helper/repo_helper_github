@@ -35,8 +35,8 @@ def test_via_cli(
 		runner = CliRunner()
 		result: Result = runner.invoke(update)
 
-	assert result.exit_code == 0
 	result.check_stdout(advanced_file_regression, extension=".md")
+	assert result.exit_code == 0
 
 	# Check the repository has been updated
 	repo = github_manager.github.repository("domdfcoding", "repo_helper_demo")

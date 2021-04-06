@@ -123,6 +123,9 @@ Installation
 
 .. end installation
 
+Contents
+-----------
+
 .. toctree::
 	:hidden:
 
@@ -131,9 +134,22 @@ Installation
 .. toctree::
 	:maxdepth: 3
 	:caption: Documentation
+	:glob:
 
 	usage
-	api
+
+.. toctree::
+	:maxdepth: 3
+	:caption: API Reference
+	:glob:
+
+	api/repo_helper_github
+	api/*
+
+.. toctree::
+	:maxdepth: 3
+	:caption: Contributing
+
 	contributing
 	Source
 
