@@ -10,6 +10,7 @@ version: '0.6.0'
 license: 'MIT'
 short_desc: "Manage GitHub repositories with repo-helper."
 
+use_whey: true
 enable_conda: False
 min_coverage: 85
 
