@@ -85,19 +85,17 @@ echo_rate_limit = deprecated(
 		deprecated_in="0.5.0",
 		removed_in="1.0.0",
 		current_version=__version__,
-		details="Use the new 'github3-utils' package instead."
-		)(
-				_utils_echo_rate_limit
-				)
+		details="Use the new 'github3-utils' package instead.",
+		func=_utils_echo_rate_limit,
+		)
 
 get_user = deprecated(
 		deprecated_in="0.6.0",
 		removed_in="1.0.0",
 		current_version=__version__,
-		details="Use the new 'github3-utils' package instead."
-		)(
-				_utils_get_user
-				)
+		details="Use the new 'github3-utils' package instead.",
+		func=_utils_get_user,
+		)
 
 
 def _lower(string: str) -> str:
@@ -498,10 +496,9 @@ encrypt_secret = deprecated(
 		deprecated_in="0.5.0",
 		removed_in="1.0.0",
 		current_version=__version__,
-		details="Use the new 'github3-utils' package instead."
-		)(
-				secrets.encrypt_secret
-				)
+		details="Use the new 'github3-utils' package instead.",
+		func=secrets.encrypt_secret,
+		)
 
 encrypt_secret.__doc__ = (encrypt_secret.__doc__ or '').replace(
 		":func:`~.get_secrets`",
