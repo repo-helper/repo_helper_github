@@ -44,7 +44,7 @@ If possible, please include a small, self-contained reproduction.
   * repo_helper_github:
 
 ## Installation source
-<!-- e.g. Github repository, Github Releases, PyPI/pip, Anaconda/conda -->
+<!-- e.g. GitHub repository, GitHub Releases, PyPI/pip, Anaconda/conda -->
 
 
 ## Other Additional Information:
