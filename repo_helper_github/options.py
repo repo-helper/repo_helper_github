@@ -33,7 +33,7 @@ from typing import Callable, TypeVar
 import click
 from domdf_python_tools.stringlist import DelimitedList
 
-__all__ = ["version_callback", "org_option"]
+__all__ = ["version_callback", "org_option", "_C"]
 
 _C = TypeVar("_C", bound=click.Command)
 

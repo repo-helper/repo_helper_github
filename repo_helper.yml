@@ -34,6 +34,9 @@ keywords:
 
 extra_sphinx_extensions:
  - sphinx_click
+ - sphinx_toolbox_experimental.html_section
+ - sphinx_toolbox_experimental.autosummary_widths
+ - local_extension
 
 intersphinx_mapping:
  - '"github3": ("https://github3py.readthedocs.io/en/master/", None)'
@@ -52,3 +55,10 @@ classifiers:
  - 'Environment :: Console'
  - "Intended Audience :: Developers"
  - 'Topic :: Software Development :: Version Control :: Git'
+
+exclude_files:
+ - contributing
+
+sphinx_conf_epilogue:
+ - nitpicky = True
+ - autosummary_widths_builders = ["latex"]

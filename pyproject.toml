@@ -45,6 +45,86 @@ python-implementations = [ "CPython", "PyPy",]
 platforms = [ "Windows", "macOS", "Linux",]
 license-key = "MIT"
 
+[tool.sphinx-pyproject]
+github_username = "repo-helper"
+github_repository = "repo_helper_github"
+author = "Dominic Davis-Foster"
+project = "repo-helper-github"
+copyright = "2020-2021 Dominic Davis-Foster"
+language = "en"
+package_root = "repo_helper_github"
+extensions = [
+    "sphinx_toolbox",
+    "sphinx_toolbox.more_autodoc",
+    "sphinx_toolbox.more_autosummary",
+    "sphinx_toolbox.documentation_summary",
+    "sphinx_toolbox.tweaks.param_dash",
+    "sphinx_toolbox.tweaks.latex_layout",
+    "sphinx_toolbox.tweaks.latex_toc",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.mathjax",
+    "sphinxcontrib.extras_require",
+    "sphinx.ext.todo",
+    "sphinxemoji.sphinxemoji",
+    "notfound.extension",
+    "sphinx_copybutton",
+    "sphinxcontrib.default_values",
+    "sphinxcontrib.toctree_plus",
+    "sphinx_debuginfo",
+    "seed_intersphinx_mapping",
+    "sphinx_click",
+    "sphinx_toolbox_experimental.html_section",
+    "sphinx_toolbox_experimental.autosummary_widths",
+    "local_extension",
+]
+sphinxemoji_style = "twemoji"
+gitstamp_fmt = "%d %b %Y"
+templates_path = [ "_templates",]
+html_static_path = [ "_static",]
+source_suffix = ".rst"
+master_doc = "index"
+suppress_warnings = [ "image.nonlocal_uri",]
+pygments_style = "default"
+html_theme = "furo"
+html_theme_path = [ "../..",]
+html_show_sourcelink = true
+toctree_plus_types = [
+    "class",
+    "confval",
+    "data",
+    "directive",
+    "enum",
+    "exception",
+    "flag",
+    "function",
+    "namedtuple",
+    "protocol",
+    "role",
+    "typeddict",
+]
+add_module_names = false
+hide_none_rtype = true
+all_typevars = true
+overloads_location = "bottom"
+autodoc_exclude_members = [
+    "__dict__",
+    "__class__",
+    "__dir__",
+    "__weakref__",
+    "__module__",
+    "__annotations__",
+    "__orig_bases__",
+    "__parameters__",
+    "__subclasshook__",
+    "__init_subclass__",
+    "__attrs_attrs__",
+    "__init__",
+    "__new__",
+    "__getnewargs__",
+    "__abstractmethods__",
+    "__hash__",
+]
+
 [project.entry-points."repo_helper.command"]
 repo_helper_github = "repo_helper_github.cli:github"
 

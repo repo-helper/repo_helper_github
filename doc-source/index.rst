@@ -5,6 +5,7 @@ repo_helper_github
 .. start short_desc
 
 .. documentation-summary::
+	:meta:
 
 .. end short_desc
 
@@ -126,6 +127,8 @@ Installation
 Contents
 -----------
 
+.. html-section::
+
 .. toctree::
 	:hidden:
 
@@ -133,24 +136,18 @@ Contents
 
 .. toctree::
 	:maxdepth: 3
-	:caption: Documentation
 	:glob:
 
 	usage
-
-.. toctree::
-	:maxdepth: 3
-	:caption: API Reference
-	:glob:
-
 	api/repo_helper_github
 	api/*
 
-.. toctree::
-	:maxdepth: 3
-	:caption: Contributing
+.. sidebar-links::
+	:caption: Links
+	:github:
+	:pypi: repo_helper_github
 
-	contributing
+	Contributing Guide <https://contributing.repo-helper.uk>
 	Source
 
 .. start links
@@ -159,6 +156,6 @@ Contents
 
 	View the :ref:`Function Index <genindex>` or browse the `Source Code <_modules/index.html>`__.
 
-	`Browse the GitHub Repository <https://github.com/repo-helper/repo_helper_github>`__
+	:github:repo:`Browse the GitHub Repository <repo-helper/repo_helper_github>`
 
 .. end links

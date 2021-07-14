@@ -2,15 +2,16 @@
 Usage
 =======
 
-repo-helper github
---------------------
+.. latex:vspace:: -10px
 
 .. click:: repo_helper_github.cli:github
 	:prog: repo-helper github
 	:nested: none
 
 Commands
-^^^^^^^^^^^^
+-----------
+
+.. latex:vspace:: -10px
 
 new
 *****
@@ -41,7 +42,7 @@ labels
 	:nested: none
 
 Tokens
-^^^^^^^^^
+-----------
 
 The token passed to the :option:`-t / --token <-t>` argument,
 or set as the ``GITHUB_TOKEN`` environment variable,

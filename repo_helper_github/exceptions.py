@@ -130,6 +130,8 @@ class NoSuchBranch(GitHubException):
 	:param username: The username of the account the repository belongs to.
 	:param repository: The name of the repository.
 	:param branch: The name of the branch.
+
+	.. latex:clearpage::
 	"""
 
 	#: The username of the account the repository belongs to.

@@ -114,6 +114,8 @@ class GitHubManager(RepoHelper):
 	:param colour: Whether to use coloured output.
 
 	.. versionchanged:: 0.3.0  Added the ``verbose`` and ``colour`` options.
+
+	.. latex:clearpage::
 	"""  # noqa: D400
 
 	#:
@@ -167,9 +169,8 @@ class GitHubManager(RepoHelper):
 
 		.. versionchanged:: 0.3.0
 
-			Removed the ``verbose`` option. Provide it to the class constructor instead.
-
-		.. versionchanged:: 0.3.0  Added the ``org`` argument.
+			* Removed the ``verbose`` option. Provide it to the class constructor instead.
+			* Added the ``org`` argument.
 		"""
 
 		with self.echo_rate_limit():
@@ -214,9 +215,8 @@ class GitHubManager(RepoHelper):
 
 		.. versionchanged:: 0.3.0
 
-			Removed the ``verbose`` option. Provide it to the class constructor instead.
-
-		.. versionchanged:: 0.3.0  Added the ``org`` argument.
+			* Removed the ``verbose`` option. Provide it to the class constructor instead.
+			* Added the ``org`` argument.
 		"""
 
 		with self.echo_rate_limit():
@@ -296,7 +296,7 @@ class GitHubManager(RepoHelper):
 
 		:rtype:
 
-		.. versionchanged:: 0.4.0  Add ``overwrite``, ``PYPI_TOKEN``, ``ANACONDA_TOKEN`` options.
+		.. versionchanged:: 0.4.0  Added ``overwrite``, ``PYPI_TOKEN``, ``ANACONDA_TOKEN`` options.
 		"""
 
 		with self.echo_rate_limit():
@@ -365,10 +365,14 @@ class GitHubManager(RepoHelper):
 		:param org: Whether the repository should be created for the organization set as ``username``,
 			or for the authenticated user (default).
 
+		:rtype:
+
 		:raises:
 
 			* :exc:`~.NoSuchBranch` if the branch is not found.
 			* :exc:`~.NoSuchRepository` if the repository is not found.
+
+		.. latex:clearpage::
 		"""
 
 		with self.echo_rate_limit():
