@@ -540,7 +540,7 @@ def compile_required_checks(repo: RepoHelper) -> Iterator[str]:
 			continue
 
 		for version in set_gh_actions_versions(py_versions):
-			if version == "pypy3.7":
+			if version == "pypy-3.7":
 				continue
 
 			with suppress(InvalidVersion):
