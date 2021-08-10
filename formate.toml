@@ -48,6 +48,7 @@ known_third_party = [
     "github3_py",
     "github3_utils",
     "importlib_metadata",
+    "packaging",
     "pymacaroons",
     "pynacl",
     "pyreadline",
