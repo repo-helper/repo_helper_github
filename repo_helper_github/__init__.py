@@ -28,6 +28,7 @@ Manage GitHub repositories with ``repo-helper``.
 
 # stdlib
 import tempfile
+from contextlib import suppress
 from getpass import getpass
 from typing import Callable, Dict, Iterator, Optional, Tuple, Union
 
@@ -48,6 +49,7 @@ from github3_utils import echo_rate_limit as _utils_echo_rate_limit
 from github3_utils import get_user as _utils_get_user
 from github3_utils import protect_branch, secrets
 from github3_utils.check_labels import check_status_labels
+from packaging.version import InvalidVersion, Version
 from repo_helper.core import RepoHelper
 from repo_helper.files.ci_cd import ActionsManager, platform_ci_names
 from repo_helper.utils import set_gh_actions_versions
@@ -538,8 +540,12 @@ def compile_required_checks(repo: RepoHelper) -> Iterator[str]:
 			continue
 
 		for version in set_gh_actions_versions(py_versions):
-			if "alpha" in version or "beta" in version or "-dev" in version:
+			if version == "pypy3.7":
 				continue
+
+			with suppress(InvalidVersion):
+				if Version(version).is_prerelease:
+					continue
 
 			yield f"{ci_platform} / Python {version}"
 
