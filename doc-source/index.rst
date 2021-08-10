@@ -124,10 +124,12 @@ Installation
 
 .. end installation
 
+
 Contents
 -----------
 
 .. html-section::
+
 
 .. toctree::
 	:hidden:
@@ -149,6 +151,7 @@ Contents
 
 	Contributing Guide <https://contributing.repo-helper.uk>
 	Source
+	license
 
 .. start links
 
