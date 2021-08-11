@@ -121,6 +121,13 @@ autodoc_exclude_members = [
     "__hash__",
 ]
 
+[tool.mypy]
+python_version = "3.6"
+namespace_packages = true
+check_untyped_defs = true
+warn_unused_ignores = true
+no_implicit_optional = true
+
 [project.entry-points."repo_helper.command"]
 repo_helper_github = "repo_helper_github.cli:github"
 
