@@ -127,6 +127,7 @@ namespace_packages = true
 check_untyped_defs = true
 warn_unused_ignores = true
 no_implicit_optional = true
+incremental = false
 
 [project.entry-points."repo_helper.command"]
 repo_helper_github = "repo_helper_github.cli:github"
