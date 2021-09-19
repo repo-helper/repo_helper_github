@@ -58,7 +58,8 @@ repo_helper_github
 		:workflow: mypy
 		:alt: mypy status
 
-	.. |requires| requires-io-shield::
+	.. |requires| image:: https://dependency-dash.herokuapp.com/github/repo-helper/repo_helper_github/badge.svg
+		:target: https://dependency-dash.herokuapp.com/github/repo-helper/repo_helper_github/
 		:alt: Requirements Status
 
 	.. |coveralls| coveralls-shield::
