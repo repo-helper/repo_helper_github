@@ -5,7 +5,6 @@ import re
 import pytest
 from coincidence.regressions import AdvancedFileRegressionFixture
 from consolekit.testing import CliRunner, Result
-from domdf_python_tools.paths import PathPlus
 from github3_utils import echo_rate_limit, get_user
 
 # this package
@@ -13,11 +12,11 @@ from repo_helper_github import OrganizationError, __version__
 from repo_helper_github.cli import github
 
 
+@pytest.mark.usefixtures("cassette")
 def test_rate_limit(
 		github_manager,
 		capsys,
 		advanced_file_regression: AdvancedFileRegressionFixture,
-		cassette,
 		):
 	with echo_rate_limit(github_manager.github):
 		pass
@@ -25,10 +24,10 @@ def test_rate_limit(
 	advanced_file_regression.check(capsys.readouterr().out)
 
 
+@pytest.mark.usefixtures("cassette")
 def test_assert_org_member(
 		github_manager,
 		capsys,
-		cassette,
 		):
 
 	error_msg = (
@@ -44,7 +43,7 @@ def test_assert_org_member(
 	assert not capout.err
 
 
-def test_version(tmp_pathplus: PathPlus):
+def test_version():
 	runner = CliRunner()
 
 	result: Result = runner.invoke(github, args=["--version"])

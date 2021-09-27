@@ -294,7 +294,8 @@ class GitHubManager(RepoHelper):
 		:param overwrite: Overwrite existing values.
 		:default overwrite: ask first.
 
-		``PYPI_TOKEN`` and ``ANACONDA_TOKEN`` can either be passed as keyword arguments to this function or provided at the interactive prompt.
+		``PYPI_TOKEN`` and ``ANACONDA_TOKEN`` can either be passed as keyword arguments to this function
+		or provided at the interactive prompt.
 
 		:rtype:
 

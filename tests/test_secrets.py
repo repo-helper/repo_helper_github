@@ -11,7 +11,8 @@ from github3.repos import Repository
 from repo_helper_github import validate_pypi_token
 
 
-def test_secrets(github_manager, example_config, module_cassette):
+@pytest.mark.usefixtures("module_cassette", "example_config")
+def test_secrets(github_manager):
 	# vcr.config.match_options = ["method", "uri", "headers"]
 
 	repo: Repository = github_manager.github.repository("domdfcoding", "repo_helper_demo")

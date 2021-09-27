@@ -23,9 +23,6 @@
 #  OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-# stdlib
-from typing import Dict, List
-
 # 3rd party
 from typing_extensions import TypedDict
 

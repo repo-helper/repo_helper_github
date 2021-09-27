@@ -9,7 +9,8 @@ from github3.exceptions import UnprocessableEntity
 from repo_helper_github.cli import new
 
 
-def test_create_repo(github_manager, temp_github_repo, module_cassette):
+@pytest.mark.usefixtures("module_cassette")
+def test_create_repo(github_manager, temp_github_repo):
 	with in_directory(temp_github_repo):
 		github_manager.new()
 
@@ -19,12 +20,11 @@ def test_create_repo(github_manager, temp_github_repo, module_cassette):
 			github_manager.new()
 
 
+@pytest.mark.usefixtures("betamax_github_session", "module_cassette")
 def test_via_cli(
-		betamax_github_session,
 		temp_github_repo,
 		advanced_file_regression: AdvancedFileRegressionFixture,
 		github_manager,
-		module_cassette,
 		):
 	with in_directory(temp_github_repo):
 		runner = CliRunner()
