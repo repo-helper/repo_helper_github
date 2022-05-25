@@ -118,6 +118,7 @@ class GitHubManager(RepoHelper):
 	.. versionchanged:: 0.3.0  Added the ``verbose`` and ``colour`` options.
 
 	.. latex:clearpage::
+	.. autosummary-widths:: 47/100
 	"""  # noqa: D400
 
 	#:
@@ -141,7 +142,7 @@ class GitHubManager(RepoHelper):
 			self,
 			token: str,
 			target_repo: PathLike,
-			managed_message="This file is managed by 'repo_helper'. Don't edit it directly.",
+			managed_message: str = "This file is managed by 'repo_helper'. Don't edit it directly.",
 			*,
 			verbose: bool = False,
 			colour: ColourTrilean = True,

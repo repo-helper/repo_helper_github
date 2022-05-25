@@ -54,6 +54,7 @@ extensions = [
     "sphinx_toolbox.more_autosummary",
     "sphinx_toolbox.documentation_summary",
     "sphinx_toolbox.tweaks.param_dash",
+    "sphinxcontrib.toctree_plus",
     "sphinx_toolbox.tweaks.latex_layout",
     "sphinx_toolbox.tweaks.latex_toc",
     "sphinx.ext.intersphinx",
@@ -64,14 +65,12 @@ extensions = [
     "notfound.extension",
     "sphinx_copybutton",
     "sphinxcontrib.default_values",
-    "sphinxcontrib.toctree_plus",
     "sphinx_debuginfo",
     "sphinx_licenseinfo",
     "seed_intersphinx_mapping",
     "html_section",
     "sphinx_click",
-    "sphinx_toolbox_experimental.html_section",
-    "sphinx_toolbox_experimental.autosummary_widths",
+    "sphinx_toolbox.more_autosummary.column_widths",
     "local_extension",
 ]
 sphinxemoji_style = "twemoji"

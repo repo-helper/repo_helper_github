@@ -34,8 +34,7 @@ keywords:
 
 extra_sphinx_extensions:
  - sphinx_click
- - sphinx_toolbox_experimental.html_section
- - sphinx_toolbox_experimental.autosummary_widths
+ - sphinx_toolbox.more_autosummary.column_widths
  - local_extension
 
 intersphinx_mapping:
