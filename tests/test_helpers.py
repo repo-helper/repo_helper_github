@@ -8,13 +8,13 @@ from consolekit.testing import CliRunner, Result
 from github3_utils import echo_rate_limit, get_user
 
 # this package
-from repo_helper_github import OrganizationError, __version__
+from repo_helper_github import GitHubManager, OrganizationError, __version__
 from repo_helper_github.cli import github
 
 
 @pytest.mark.usefixtures("cassette")
 def test_rate_limit(
-		github_manager,
+		github_manager: GitHubManager,
 		capsys,
 		advanced_file_regression: AdvancedFileRegressionFixture,
 		):
@@ -26,7 +26,7 @@ def test_rate_limit(
 
 @pytest.mark.usefixtures("cassette")
 def test_assert_org_member(
-		github_manager,
+		github_manager: GitHubManager,
 		capsys,
 		):
 

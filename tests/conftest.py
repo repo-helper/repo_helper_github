@@ -1,7 +1,8 @@
 # 3rd party
 import pytest
-from betamax import Betamax  # type: ignore
+from betamax import Betamax  # type: ignore[import]
 from domdf_python_tools.paths import PathPlus
+from github3 import GitHub
 from github3.session import GitHubSession
 
 # this package
@@ -31,7 +32,7 @@ def temp_github_repo(temp_empty_repo, tmp_pathplus, example_config) -> PathPlus:
 
 
 @pytest.fixture()
-def github_manager(temp_github_repo):
+def github_manager(temp_github_repo) -> GitHubManager:
 	return GitHubManager(
 			"FAKE_TOKEN",
 			temp_github_repo,
@@ -41,7 +42,7 @@ def github_manager(temp_github_repo):
 
 
 @pytest.fixture()
-def betamax_github_session(monkeypatch):
+def betamax_github_session(monkeypatch) -> GitHubSession:
 	monkeypatch.setenv("GITHUB_TOKEN", "FAKE_TOKEN")
 
 	session = GitHubSession()
@@ -55,5 +56,5 @@ def betamax_github_session(monkeypatch):
 
 
 @pytest.fixture()
-def github_client(github_manager):
+def github_client(github_manager: GitHubManager) -> GitHub:
 	return github_manager.github

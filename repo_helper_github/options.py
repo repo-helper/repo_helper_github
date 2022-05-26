@@ -56,7 +56,7 @@ def org_option() -> Callable[[_C], _C]:
 			)
 
 
-def version_callback(ctx: click.Context, param: click.Option, value: int):  # noqa: D103
+def version_callback(ctx: click.Context, param: click.Option, value: int) -> None:  # noqa: D103
 	# 3rd party
 	import repo_helper
 
