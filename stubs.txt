@@ -1,4 +1,4 @@
 git+https://github.com/domdfcoding/dulwich-stubs
 git+https://github.com/domdfcoding/pytest-regressions-stubs
-git+https://github.com/domdfcoding/github3.py@stubs
+git+https://github.com/domdfcoding/github3.py@stubs-v4
 types-click
