@@ -62,5 +62,5 @@ known_third_party = [
     "typing_extensions",
     "virtualenv",
 ]
-known_first_party = "repo_helper_github"
+known_first_party = [ "repo_helper_github",]
 line_length = 115
