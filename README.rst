@@ -99,7 +99,7 @@ repo_helper_github
 	:target: https://github.com/repo-helper/repo_helper_github/commit/master
 	:alt: GitHub last commit
 
-.. |maintained| image:: https://img.shields.io/maintenance/yes/2024
+.. |maintained| image:: https://img.shields.io/maintenance/yes/2025
 	:alt: Maintenance
 
 .. |pypi-downloads| image:: https://img.shields.io/pypi/dm/repo_helper_github
