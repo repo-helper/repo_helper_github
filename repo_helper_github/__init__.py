@@ -544,6 +544,8 @@ def compile_required_checks(repo: RepoHelper) -> Iterator[str]:
 		for version in set_gh_actions_versions(py_versions):
 			if version == "pypy-3.7":
 				continue
+			if version == "pypy-3.9":
+				continue
 
 			with suppress(InvalidVersion):
 				if Version(version).is_prerelease:
