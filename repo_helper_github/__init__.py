@@ -541,7 +541,10 @@ def compile_required_checks(repo: RepoHelper) -> Iterator[str]:
 		else:
 			continue
 
-		for version in set_gh_actions_versions(py_versions):
+		for version, (_, _, meta) in actions_manager.get_gh_actions_matrix().items():
+			if meta["experimental"]:
+				continue
+
 			if platform == "Windows":
 				if version in {"pypy-3.7", "pypy-3.9", "pypy-3.10"}:
 					continue
