@@ -2,7 +2,7 @@
 import json
 
 # 3rd party
-import pymacaroons  # type: ignore[import]
+import pymacaroons  # type: ignore[import-untyped]
 import pytest
 from apeye import URL
 from github3.repos import Repository

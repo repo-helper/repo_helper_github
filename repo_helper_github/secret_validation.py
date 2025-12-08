@@ -33,7 +33,7 @@ import json
 from typing import List, Tuple
 
 # 3rd party
-from pymacaroons import Caveat, Macaroon  # type: ignore[import]
+from pymacaroons import Caveat, Macaroon  # type: ignore[import-untyped]
 
 __all__ = ["no_op_validator", "validate_pypi_token"]
 
