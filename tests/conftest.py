@@ -4,6 +4,7 @@ from betamax import Betamax  # type: ignore[import-untyped]
 from domdf_python_tools.paths import PathPlus
 from github3 import GitHub
 from github3.session import GitHubSession
+from southwark.repo import Repo
 
 # this package
 from repo_helper_github import GitHubManager
@@ -16,8 +17,8 @@ pytest_plugins = ("coincidence", "github3_utils.testing", "repo_helper.testing")
 
 
 @pytest.fixture()
-def temp_github_repo(temp_empty_repo: PathPlus, example_config: str) -> PathPlus:
-	(temp_empty_repo / "repo_helper.yml").write_lines([
+def temp_github_repo(temp_empty_repo: Repo, tmp_pathplus: PathPlus, example_config: str) -> PathPlus:
+	(tmp_pathplus / "repo_helper.yml").write_lines([
 			*example_config.splitlines()[:8],
 			*example_config.splitlines()[10:],
 			'',
@@ -28,7 +29,7 @@ def temp_github_repo(temp_empty_repo: PathPlus, example_config: str) -> PathPlus
 			'',
 			])
 
-	return temp_empty_repo
+	return tmp_pathplus
 
 
 @pytest.fixture()
