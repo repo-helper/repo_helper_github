@@ -27,37 +27,6 @@ lines_between_types = 0
 use_parentheses = true
 remove_redundant_aliases = true
 default_section = "THIRDPARTY"
-known_third_party = [
-    "apeye",
-    "backports_entry_points_selectable",
-    "betamax",
-    "click",
-    "coincidence",
-    "consolekit",
-    "coverage",
-    "coverage_pyver_pragma",
-    "cryptography",
-    "deprecation_alias",
-    "domdf_python_tools",
-    "dulwich",
-    "github",
-    "github3_py",
-    "github3_utils",
-    "importlib_metadata",
-    "packaging",
-    "pymacaroons",
-    "pynacl",
-    "pyreadline",
-    "pytest",
-    "pytest_cov",
-    "pytest_randomly",
-    "pytest_timeout",
-    "repo_helper",
-    "requests",
-    "southwark",
-    "typing_extensions",
-    "virtualenv",
-]
 known_first_party = [ "repo_helper_github",]
 line_length = 115
 
