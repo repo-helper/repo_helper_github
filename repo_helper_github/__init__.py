@@ -30,7 +30,7 @@ Manage GitHub repositories with ``repo-helper``.
 import tempfile
 from contextlib import suppress
 from getpass import getpass
-from typing import Callable, Dict, Iterator, Optional, Tuple, Union
+from typing import Callable, ContextManager, Dict, Iterator, NoReturn, Optional, Tuple, Union
 
 # 3rd party
 import click
@@ -52,7 +52,6 @@ from github3_utils.check_labels import check_status_labels
 from packaging.version import InvalidVersion, Version
 from repo_helper.core import RepoHelper
 from repo_helper.files.ci_cd import ActionsManager, platform_ci_names
-from repo_helper.utils import set_gh_actions_versions
 from southwark.repo import Repo
 
 # this package
@@ -154,7 +153,7 @@ class GitHubManager(RepoHelper):
 		self.colour = resolve_color_default(colour)
 		self.load_settings()
 
-	def echo_rate_limit(self):
+	def echo_rate_limit(self) -> ContextManager[GitHub]:
 		"""
 		Contextmanager to echo the GitHub API rate limit before and after making a series of requests.
 		"""
@@ -278,13 +277,13 @@ class GitHubManager(RepoHelper):
 			self.assert_matching_usernames(user)
 			return user
 
-	def secrets(
-			self,
-			org: bool = False,
-			overwrite: Optional[bool] = None,
-			PYPI_TOKEN: Optional[str] = None,
-			ANACONDA_TOKEN: Optional[str] = None
-			) -> int:
+	def secrets(  # noqa: PRM002
+		self,
+		org: bool = False,
+		overwrite: Optional[bool] = None,
+		PYPI_TOKEN: Optional[str] = None,
+		ANACONDA_TOKEN: Optional[str] = None,
+		) -> int:
 		"""
 		Set or update the secrets of the GitHub repository for this project.
 
@@ -336,9 +335,8 @@ class GitHubManager(RepoHelper):
 
 					valid, invalid_reason = target_secrets[secret_name](secret_value)
 					if not valid:
-						raise click.Abort(
-								f"The value for {secret_name} does not appear to be valid: {invalid_reason}"
-								)
+						msg = f"The value for {secret_name} does not appear to be valid: {invalid_reason}"
+						raise click.Abort(msg)
 
 					response = secrets.set_secret(
 							repo,
@@ -398,7 +396,7 @@ class GitHubManager(RepoHelper):
 		click.echo("Up to date!")
 		return 0
 
-	def assert_matching_usernames(self, user: users.User):
+	def assert_matching_usernames(self, user: users.User) -> None:
 		"""
 		Assert that the username configured in ``repo_helper.yml`` matches that of the authenticated user.
 
@@ -415,7 +413,7 @@ class GitHubManager(RepoHelper):
 					username=username,
 					)
 
-	def assert_org_member(self, user: users.User):
+	def assert_org_member(self, user: users.User) -> None:
 		"""
 		Assert that the organization configured in ``repo_helper.yml`` exists, and the authenticated user is a member.
 
@@ -424,7 +422,7 @@ class GitHubManager(RepoHelper):
 
 		username = self.templates.globals["username"]
 
-		def error():
+		def error() -> NoReturn:
 			raise OrganizationError(
 					f"Either the organization configured in 'repo_helper.yml' ({username}) "
 					f"does not exist or the authenticated user ({user.login}) is not a member!",
@@ -439,7 +437,7 @@ class GitHubManager(RepoHelper):
 		if not org.is_member(user.login):
 			raise error()
 
-	def update_topics(self, repo: repos.Repository):
+	def update_topics(self, repo: repos.Repository) -> None:
 		"""
 		Update the repository's topics.
 
@@ -607,5 +605,5 @@ class IsolatedGitHubManager(GitHubManager):
 
 		self.load_settings()
 
-	def __del__(self):
+	def __del__(self) -> None:
 		self._tmpdir.cleanup()

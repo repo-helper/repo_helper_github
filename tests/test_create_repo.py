@@ -2,15 +2,16 @@
 import pytest
 from coincidence.regressions import AdvancedFileRegressionFixture
 from consolekit.testing import CliRunner, Result
-from domdf_python_tools.paths import in_directory
+from domdf_python_tools.paths import PathPlus, in_directory
 from github3.exceptions import UnprocessableEntity
 
 # this package
+from repo_helper_github import GitHubManager
 from repo_helper_github.cli import new
 
 
 @pytest.mark.usefixtures("module_cassette")
-def test_create_repo(github_manager, temp_github_repo):
+def test_create_repo(github_manager: GitHubManager, temp_github_repo: PathPlus):
 	with in_directory(temp_github_repo):
 		github_manager.new()
 
@@ -22,9 +23,9 @@ def test_create_repo(github_manager, temp_github_repo):
 
 @pytest.mark.usefixtures("betamax_github_session", "module_cassette")
 def test_via_cli(
-		temp_github_repo,
+		temp_github_repo: PathPlus,
 		advanced_file_regression: AdvancedFileRegressionFixture,
-		github_manager,
+		github_manager: GitHubManager,
 		):
 	with in_directory(temp_github_repo):
 		runner = CliRunner()

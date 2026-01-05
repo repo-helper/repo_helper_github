@@ -2,14 +2,15 @@
 import pytest
 from coincidence.regressions import AdvancedFileRegressionFixture
 from consolekit.testing import CliRunner, Result
-from domdf_python_tools.paths import in_directory
+from domdf_python_tools.paths import PathPlus, in_directory
 
 # this package
+from repo_helper_github import GitHubManager
 from repo_helper_github.cli import update
 
 
 @pytest.mark.usefixtures("cassette")
-def test_update_topics(github_manager, ):
+def test_update_topics(github_manager: GitHubManager):
 	repo = github_manager.github.repository("domdfcoding", "repo_helper_demo")
 	github_manager.update_topics(repo)
 
@@ -17,7 +18,7 @@ def test_update_topics(github_manager, ):
 
 
 @pytest.mark.usefixtures("module_cassette")
-def test_update(github_manager, temp_github_repo):
+def test_update(github_manager: GitHubManager, temp_github_repo: PathPlus):
 	with in_directory(temp_github_repo):
 		github_manager.update()
 
@@ -29,9 +30,9 @@ def test_update(github_manager, temp_github_repo):
 
 @pytest.mark.usefixtures("betamax_github_session", "module_cassette")
 def test_via_cli(
-		temp_github_repo,
+		temp_github_repo: PathPlus,
 		advanced_file_regression: AdvancedFileRegressionFixture,
-		github_manager,
+		github_manager: GitHubManager,
 		):
 	with in_directory(temp_github_repo):
 		runner = CliRunner()

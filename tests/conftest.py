@@ -16,8 +16,8 @@ pytest_plugins = ("coincidence", "github3_utils.testing", "repo_helper.testing")
 
 
 @pytest.fixture()
-def temp_github_repo(temp_empty_repo, tmp_pathplus, example_config) -> PathPlus:
-	(tmp_pathplus / "repo_helper.yml").write_lines([
+def temp_github_repo(temp_empty_repo: PathPlus, example_config: str) -> PathPlus:
+	(temp_empty_repo / "repo_helper.yml").write_lines([
 			*example_config.splitlines()[:8],
 			*example_config.splitlines()[10:],
 			'',
@@ -28,11 +28,11 @@ def temp_github_repo(temp_empty_repo, tmp_pathplus, example_config) -> PathPlus:
 			'',
 			])
 
-	return tmp_pathplus
+	return temp_empty_repo
 
 
 @pytest.fixture()
-def github_manager(temp_github_repo) -> GitHubManager:
+def github_manager(temp_github_repo: PathPlus) -> GitHubManager:
 	return GitHubManager(
 			"FAKE_TOKEN",
 			temp_github_repo,
@@ -47,7 +47,7 @@ def betamax_github_session(monkeypatch) -> GitHubSession:
 
 	session = GitHubSession()
 
-	def __init__(self, username='', password='', token='', *args, **kwargs):
+	def __init__(self, username: str = '', password: str = '', token: str = '', *args, **kwargs):
 		super(Github, self).__init__(username=username, password=password, token=token, session=session)
 
 	monkeypatch.setattr(Github, "__init__", __init__)

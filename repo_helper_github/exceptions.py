@@ -72,10 +72,8 @@ class ErrorCreatingRepository(GitHubException):
 		self.repository = str(repository)
 		self.org = bool(org)
 
-		super().__init__(
-				f"Could not create repository {self.repository!r} "
-				f"for {'org' if self.org else 'user'} {self.username!r}."
-				)
+		msg = f"Could not create repository {self.repository!r} for {'org' if self.org else 'user'} {self.username!r}."
+		super().__init__(msg)
 
 	@property
 	def full_name(self) -> str:
@@ -109,10 +107,8 @@ class NoSuchRepository(GitHubException):
 		self.repository = str(repository)
 		self.org = bool(org)
 
-		super().__init__(
-				f"No such repository {self.repository!r} "
-				f"for {'org' if self.org else 'user'} {self.username!r}."
-				)
+		msg = f"No such repository {self.repository!r} for {'org' if self.org else 'user'} {self.username!r}."
+		super().__init__(msg)
 
 	@property
 	def full_name(self) -> str:
@@ -156,6 +152,7 @@ class BadUsername(GitHubException):
 	"""
 	Raised when there is a problem with the username configured in ``repo_helper.yml``.
 
+	:param msg: Error message.
 	:param username:
 	"""
 
@@ -171,6 +168,7 @@ class OrganizationError(GitHubException):
 	"""
 	Raised when there is a problem with the organization configured in ``repo_helper.yml``.
 
+	:param msg: Error message.
 	:param organization:
 	"""
 

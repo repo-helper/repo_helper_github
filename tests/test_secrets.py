@@ -8,11 +8,11 @@ from apeye import URL
 from github3.repos import Repository
 
 # this package
-from repo_helper_github import validate_pypi_token
+from repo_helper_github import GitHubManager, validate_pypi_token
 
 
 @pytest.mark.usefixtures("module_cassette", "example_config")
-def test_secrets(github_manager):
+def test_secrets(github_manager: GitHubManager):
 	# vcr.config.match_options = ["method", "uri", "headers"]
 
 	repo: Repository = github_manager.github.repository("domdfcoding", "repo_helper_demo")

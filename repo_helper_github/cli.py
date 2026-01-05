@@ -56,7 +56,7 @@ __all__ = [
 
 @version_option(version_callback)
 @cli_group(invoke_without_command=False)
-def github():
+def github() -> None:
 	"""
 	Manage a GitHub repo.
 	"""
@@ -80,7 +80,7 @@ def options(command: Command) -> Command:
 
 @options
 @github_command()
-def new(token: str, verbose: bool = False, colour: ColourTrilean = None, org: bool = False):
+def new(token: str, verbose: bool = False, colour: ColourTrilean = None, org: bool = False) -> None:
 	"""
 	Create a new GitHub repository for this project.
 	"""
@@ -98,7 +98,7 @@ def new(token: str, verbose: bool = False, colour: ColourTrilean = None, org: bo
 
 @options
 @github_command()
-def update(token: str, verbose: bool = False, colour: ColourTrilean = None, org: bool = False):
+def update(token: str, verbose: bool = False, colour: ColourTrilean = None, org: bool = False) -> None:
 	"""
 	Update the GitHub repository for this project.
 	"""
@@ -116,7 +116,7 @@ def update(token: str, verbose: bool = False, colour: ColourTrilean = None, org:
 
 @options
 @github_command()
-def secrets(token: str, verbose: bool = False, colour: ColourTrilean = None, org: bool = False):
+def secrets(token: str, verbose: bool = False, colour: ColourTrilean = None, org: bool = False) -> None:
 	"""
 	Set or update the secrets of the GitHub repository for this project.
 	"""
@@ -141,7 +141,7 @@ def protect_branch(
 		verbose: bool = False,
 		colour: ColourTrilean = None,
 		org: bool = False,
-		):
+		) -> None:
 	"""
 	Set or update the branch protection for the given branch on GitHub.
 	"""
@@ -164,7 +164,7 @@ def protect_branch(
 
 @options
 @github_command()
-def labels(token: str, verbose: bool = False, colour: ColourTrilean = None, org: bool = False):
+def labels(token: str, verbose: bool = False, colour: ColourTrilean = None, org: bool = False) -> None:
 	"""
 	Create labels for this repository.
 	"""

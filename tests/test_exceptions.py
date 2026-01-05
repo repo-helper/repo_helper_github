@@ -1,5 +1,6 @@
 # stdlib
 import re
+from typing import Type
 
 # 3rd party
 import click
@@ -63,7 +64,7 @@ def test_ErrorCreatingRepository():
 
 	with pytest.raises(
 			ErrorCreatingRepository,
-			match="Could not create repository 'domdf_python_tools' for user 'domdfcoding'."
+			match="Could not create repository 'domdf_python_tools' for user 'domdfcoding'.",
 			):
 		raise exception
 
@@ -84,7 +85,7 @@ def test_ErrorCreatingRepository():
 
 	with pytest.raises(
 			ErrorCreatingRepository,
-			match="Could not create repository 'domdf_python_tools' for user 'domdfcoding'."
+			match="Could not create repository 'domdf_python_tools' for user 'domdfcoding'.",
 			):
 		raise exception
 
@@ -177,7 +178,8 @@ def test_NoSuchBranch():
 	assert isinstance(exception.branch, str)
 
 	with pytest.raises(
-			NoSuchBranch, match="No such branch 'master' for repository 'domdfcoding/domdf_python_tools'."
+			NoSuchBranch,
+			match="No such branch 'master' for repository 'domdfcoding/domdf_python_tools'.",
 			):
 		raise exception
 
@@ -243,7 +245,7 @@ def test_OrganizationError():
 				(ErrorCreatingRepository("domdfcoding", "domdf_python_tools"), "Error Creating Repository: "),
 				(
 						ErrorCreatingRepository("domdfcoding", "domdf_python_tools", org=False),
-						"Error Creating Repository: "
+						"Error Creating Repository: ",
 						),
 				(ErrorCreatingRepository("repo-helper", "whey", org=True), "Error Creating Repository: "),
 				(NoSuchRepository("domdfcoding", "domdf_python_tools"), "No Such Repository: "),
@@ -255,15 +257,15 @@ def test_OrganizationError():
 				(BadUsername("Invalid username", "repo-helper"), "Bad Username: Invalid username"),
 				(
 						OrganizationError("Invalid organization", "domdfcoding"),
-						"Organization Error: Invalid organization"
+						"Organization Error: Invalid organization",
 						),
 				(
 						OrganizationError("Invalid organization", "repo-helper"),
-						"Organization Error: Invalid organization"
+						"Organization Error: Invalid organization",
 						),
 				]
 		)
-def test_TracebackHandler(exception, match, capsys):
+def test_TracebackHandler(exception: Type[Exception], match: str, capsys):
 	with pytest.raises(click.Abort), TracebackHandler()():
 		raise exception
 
