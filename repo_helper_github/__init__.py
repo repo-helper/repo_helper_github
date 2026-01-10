@@ -283,7 +283,7 @@ class GitHubManager(RepoHelper):
 		overwrite: Optional[bool] = None,
 		PYPI_TOKEN: Optional[str] = None,
 		ANACONDA_TOKEN: Optional[str] = None,
-		) -> int:
+	) -> int:
 		"""
 		Set or update the secrets of the GitHub repository for this project.
 

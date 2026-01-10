@@ -36,7 +36,7 @@ from repo_helper_github.exceptions import (
 				BadUsername("Invalid username", "repo-helper"),
 				OrganizationError("Invalid organization", "domdfcoding"),
 				OrganizationError("Invalid organization", "repo-helper"),
-				]
+				],
 		)
 def test_GitHubException(exception: GitHubException):
 	with pytest.raises(GitHubException):
@@ -263,7 +263,7 @@ def test_OrganizationError():
 						OrganizationError("Invalid organization", "repo-helper"),
 						"Organization Error: Invalid organization",
 						),
-				]
+				],
 		)
 def test_TracebackHandler(exception: Type[Exception], match: str, capsys):
 	with pytest.raises(click.Abort), TracebackHandler()():
