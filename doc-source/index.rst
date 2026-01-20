@@ -121,6 +121,7 @@ Installation
 
 .. installation:: repo_helper_github
 	:pypi:
+	:pypi-name: repo-helper-github
 	:github:
 
 .. end installation
