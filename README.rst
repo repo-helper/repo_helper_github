@@ -119,6 +119,6 @@ To install with ``pip``:
 
 .. code-block:: bash
 
-	$ python -m pip install repo_helper_github
+	$ python -m pip install repo-helper-github
 
 .. end installation
