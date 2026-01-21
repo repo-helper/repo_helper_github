@@ -68,20 +68,20 @@ repo_helper_github
 	:target: https://www.codefactor.io/repository/github/repo-helper/repo_helper_github
 	:alt: CodeFactor Grade
 
-.. |pypi-version| image:: https://img.shields.io/pypi/v/repo_helper_github
-	:target: https://pypi.org/project/repo_helper_github/
+.. |pypi-version| image:: https://img.shields.io/pypi/v/repo-helper-github
+	:target: https://pypi.org/project/repo-helper-github/
 	:alt: PyPI - Package Version
 
-.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/repo_helper_github?logo=python&logoColor=white
-	:target: https://pypi.org/project/repo_helper_github/
+.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/repo-helper-github?logo=python&logoColor=white
+	:target: https://pypi.org/project/repo-helper-github/
 	:alt: PyPI - Supported Python Versions
 
-.. |supported-implementations| image:: https://img.shields.io/pypi/implementation/repo_helper_github
-	:target: https://pypi.org/project/repo_helper_github/
+.. |supported-implementations| image:: https://img.shields.io/pypi/implementation/repo-helper-github
+	:target: https://pypi.org/project/repo-helper-github/
 	:alt: PyPI - Supported Implementations
 
-.. |wheel| image:: https://img.shields.io/pypi/wheel/repo_helper_github
-	:target: https://pypi.org/project/repo_helper_github/
+.. |wheel| image:: https://img.shields.io/pypi/wheel/repo-helper-github
+	:target: https://pypi.org/project/repo-helper-github/
 	:alt: PyPI - Wheel
 
 .. |license| image:: https://img.shields.io/github/license/repo-helper/repo_helper_github
@@ -102,8 +102,8 @@ repo_helper_github
 .. |maintained| image:: https://img.shields.io/maintenance/yes/2026
 	:alt: Maintenance
 
-.. |pypi-downloads| image:: https://img.shields.io/pypi/dm/repo_helper_github
-	:target: https://pypistats.org/packages/repo_helper_github
+.. |pypi-downloads| image:: https://img.shields.io/pypi/dm/repo-helper-github
+	:target: https://pypistats.org/packages/repo-helper-github
 	:alt: PyPI - Downloads
 
 .. end shields

@@ -7,4 +7,4 @@ License
 .. license-info:: MIT
 
 .. license::
-	:py: repo_helper_github
+	:py: repo-helper-github
