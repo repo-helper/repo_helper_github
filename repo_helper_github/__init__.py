@@ -529,13 +529,10 @@ def compile_required_checks(repo: RepoHelper) -> Iterator[str]:
 
 		if platform == "Windows":
 			ci_platform = platform_ci_names[platform]
-			py_versions = actions_manager.get_windows_ci_versions()
 		elif platform == "Linux":
 			ci_platform = platform_ci_names[platform]
-			py_versions = actions_manager.get_linux_ci_versions()
 		# elif platform == "macOS":
 		# 	ci_platform = platform_ci_names[platform]
-		# 	py_versions = actions_manager.get_macos_ci_versions()
 		else:
 			continue
 

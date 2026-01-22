@@ -27,4 +27,3 @@ def replace_environment_variables_header(app: Sphinx, exception: Optional[Except
 
 def setup(app: Sphinx):
 	app.connect("build-finished", replace_environment_variables_header)
-	pass
